@@ -1,7 +1,11 @@
 package application;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -192,6 +196,11 @@ public class ChoiceWindow {
 
 	}
 
+	
+	private static ComboBox<Integer> ID;
+	private static ComboBox<String> day;
+	private static int maxWeight;
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static Object[] displayReduceFarmer(Integer[] integers, FarmerManager Manager) {
 		// TODO Auto-generated method stub
 		Dialog<Object[]> dialog = new Dialog<>();
@@ -213,15 +222,15 @@ public class ChoiceWindow {
 		grid.setPadding(new Insets(20, 150, 10, 10));
 
 
-		ComboBox<Integer> ID = 
+		ID = 
                 new ComboBox<Integer>(FXCollections 
                             .observableArrayList(integers));
-		ComboBox<String> day = 
+		day = 
                 new ComboBox<String>(FXCollections 
                             .observableArrayList(new String[] {""}));
 		TextField weight = new TextField("0");
 
-		int maxWeight = 0;
+		maxWeight = 0;
 		weight.textProperty().addListener(new ChangeListener<String>() {
 		    @Override
 		    public void changed(ObservableValue<? extends String> observable, String oldValue, 
@@ -240,8 +249,20 @@ public class ChoiceWindow {
 		ID.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue ov, Object t, Object t1) {
+            	List<String> toUse = new ArrayList<String>();
+            	DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            	for(Date tmp: Manager.findFarmer((Integer)t1).getWeightByDay().keySet()) {
+            		toUse.add(dateFormat.format(tmp));
+            	}
             	day = new ComboBox<String>(FXCollections 
-                                    .observableArrayList(Manager.Farmers));
+                                    .observableArrayList(toUse));
+            }
+        });
+		
+		day.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
+            @Override
+            public void changed(ObservableValue ov, Object t, Object t1) {
+            	maxWeight = Manager.findFarmer(ID.getValue()).getTotalWeight();
             }
         });
 		
@@ -262,7 +283,7 @@ public class ChoiceWindow {
 
 		dialog.setResultConverter(dialogButton -> {
 			if (dialogButton == OKButton) {
-				return new Pair<>(startDate, endDate);
+				return new Object[] {day.getValue(),ID.getValue(),Integer.parseInt(weight.getText())};
 			}
 			return null;
 		});
