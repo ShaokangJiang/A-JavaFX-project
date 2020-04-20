@@ -32,8 +32,8 @@ import javafx.stage.Stage;
  */
 public class ImportExportWindow extends Application {
 
-	static FileChooser fileChooser;
-	static String path1 = System.getProperty("user.home");
+	static protected FileChooser fileChooser;
+	static protected String path1 = System.getProperty("user.home");
 
 	/**
 	 * Show this import window

@@ -9,22 +9,17 @@ import javafx.scene.control.TableView;
 
 /**
  * The core management class
+ * 
  * @author shaokang
  *
  */
-public class FarmerManager implements Export<FarmerManager.Data> {
+public class FarmerManager implements Export<Object[]> {
 
 	// Main class will use them, so it is needed to be in protected
 	protected List<Farmer> Farmers;
 	protected DataFrameIndex ds;
 	private String information = "";
 	protected int totalWeight;
-
-	protected class Data {
-		protected int id;
-		protected Date day;
-		protected int gallon;
-	}
 
 	/**
 	 * Constructor of this class, will be called once the entire program
@@ -33,7 +28,8 @@ public class FarmerManager implements Export<FarmerManager.Data> {
 	 */
 	public FarmerManager() {
 		Farmers = new ArrayList<Farmer>();
-		ds = null;
+		ds = new DataFrameIndex(new String[] { "date", "farm_id", "weight" },
+				new Object[] { "2019-01-01", 1, 1 });
 	}
 
 	/**
@@ -83,7 +79,7 @@ public class FarmerManager implements Export<FarmerManager.Data> {
 		}
 		if (success)
 			ds.appendRow(new Object[] { day, id, weight });
-		totalWeight+=weight;
+		totalWeight += weight;
 		return success;
 	}
 
@@ -268,7 +264,8 @@ public class FarmerManager implements Export<FarmerManager.Data> {
 							+ System.lineSeparator()
 							+ "  require: Date(2019-01-01),id(Farm 1), weight(25)"
 							+ System.lineSeparator() + "  received: " + a[0]
-							+ ",Farm " + a[1] + "," + a[2]+ System.lineSeparator();
+							+ ",Farm " + a[1] + "," + a[2]
+							+ System.lineSeparator();
 			} catch (Exception e) {
 				information += e.getMessage() + "\n";
 			}
@@ -294,7 +291,7 @@ public class FarmerManager implements Export<FarmerManager.Data> {
 	 * This is a special export, basically, directly return ds of this class
 	 * would be enough
 	 */
-	public DataFrame export(TableView<FarmerManager.Data> a) {
+	public DataFrame export(TableView<Object[]> a) {
 		// TODO Auto-generated method stub
 		return ds;
 	}
