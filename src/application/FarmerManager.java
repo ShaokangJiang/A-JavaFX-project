@@ -71,6 +71,7 @@ public class FarmerManager implements Export<Object[]> {
 			if (abc.getId() == id) {
 				success = abc.newValue(day, weight);
 				find = false;
+				break;
 			}
 		}
 		if (find) {
@@ -164,6 +165,7 @@ public class FarmerManager implements Export<Object[]> {
 		for (int i = 0; i < Farmers.size(); i++) {
 			if (Farmers.get(i).getId() == id) {
 				idx = i;
+				break;
 			}
 		}
 		if (idx < 0) {
@@ -191,6 +193,17 @@ public class FarmerManager implements Export<Object[]> {
 		information = "";
 		return a;
 	}
+	
+	public Farmer findFarmer(int id) {
+		int idx = -1;
+		for (int i = 0; i < Farmers.size(); i++) {
+			if (Farmers.get(i).getId() == id) {
+				return Farmers.get(i);
+			}
+		}
+		return null;
+
+	}
 
 	/**
 	 * Remove the data of a farm at a specific day. You should also remove data
@@ -210,6 +223,7 @@ public class FarmerManager implements Export<Object[]> {
 		for (int i = 0; i < Farmers.size(); i++) {
 			if (Farmers.get(i).getId() == id) {
 				idx = i;
+				break;
 			}
 		}
 		if (idx < 0) {
@@ -246,6 +260,7 @@ public class FarmerManager implements Export<Object[]> {
 		for (int i = 0; i < Farmers.size(); i++) {
 			if (Farmers.get(i).getId() == id) {
 				idx = i;
+				break;
 			}
 		}
 		if (idx < 0) {

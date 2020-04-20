@@ -217,20 +217,34 @@ public class Main extends Application {
 		removeFarmerData.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				Object[] pass = null;
-				try {
-					pass = ChoiceWindow.displayRemoveFarmer(Manager.allID.toArray(new Integer[0]));
-				}catch(Exception e) {
-					if(pass == null) {
-						alert1.display("You didn't choose any data!");
-						return;
+				final String[] tmp = new String[] {"Remove Farmer", "Reduce weight on a day", "Remove weight on a day"};
+				switch(selectFun(tmp)) {
+				case "Remove Farmer":
+					break;
+				case "Reduce weight on a day":
+					Object[] pass = null;
+					try {
+						pass = ChoiceWindow.displayReduceFarmer(Manager.allID.toArray(new Integer[0]), Manager);
+					}catch(Exception e) {
+						if(pass == null) {
+							alert1.display("You didn't choose any data!");
+							return;
+						}
 					}
+					if(!Manager.removeData((Integer)pass[1], (Integer)pass[2], (String)pass[0])) {
+						alert1.display("Error happen", Manager.getError());
+					}else {
+						alert1.display("Data import successfully");
+					}
+					break;
+				case "Remove weight on a day":
+				
+					break;
+				default:
+					return;	
 				}
-				if(!Manager.removeData((Integer)pass[1], (Integer)pass[2], (String)pass[0])) {
-					alert1.display("Error happen", Manager.getError());
-				}else {
-					alert1.display("Data import successfully");
-				}
+				
+				
 			}
 		});
 		
@@ -256,17 +270,12 @@ public class Main extends Application {
 		s.show();
 	}
 	
-	private static String selectFun(String[] tmp) {
-		
-		
+	private static String selectFun(String[] tmp) {		
 		ChoiceDialog<String> dialog = new ChoiceDialog<String>( tmp[0], tmp);
 		dialog.setTitle("Select Function");
 		dialog.setHeaderText("Please choose the function you want");
-		
 		String result = dialog.showAndWait().get();
-
 		//System.out.print(result);
-		
 		return result;
 		
 	}
