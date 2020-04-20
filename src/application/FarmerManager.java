@@ -18,6 +18,7 @@ public class FarmerManager implements Export<FarmerManager.Data> {
 	protected List<Farmer> Farmers;
 	protected DataFrameIndex ds;
 	private String information = "";
+	protected int totalWeight;
 
 	protected class Data {
 		protected int id;
@@ -82,6 +83,7 @@ public class FarmerManager implements Export<FarmerManager.Data> {
 		}
 		if (success)
 			ds.appendRow(new Object[] { day, id, weight });
+		totalWeight+=weight;
 		return success;
 	}
 
@@ -168,6 +170,7 @@ public class FarmerManager implements Export<FarmerManager.Data> {
 
 		if (Farmers.get(idx).removeValue(day, weight)) {
 			ds.reduceAmount(id, day, weight);
+			totalWeight -= weight;
 			return true;
 		} else {
 			information = "day no exist or weight < 0";
@@ -205,6 +208,7 @@ public class FarmerManager implements Export<FarmerManager.Data> {
 			information = "id not found";
 			return false;
 		}
+		totalWeight -= Farmers.get(idx).getWeightByDay().get(day);
 		if (Farmers.get(idx).removeValue(day)) {
 			ds.removeRow(id, day);
 			return true;
@@ -232,6 +236,7 @@ public class FarmerManager implements Export<FarmerManager.Data> {
 			information = "id not found";
 			return false;
 		}
+		totalWeight -= Farmers.get(idx).getTotalWeight();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		Farmer tmp = Farmers.remove(idx);
 		for (Date a : tmp.getWeightByDay().keySet()) {
