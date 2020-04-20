@@ -48,7 +48,7 @@ public class ChoiceWindow {
 		grid.add(new Label("End date:"), 0, 1);
 		grid.add(end, 1, 1);
 
-		// Enable/Disable login button depending on whether a username was entered.
+
 		Node loginButton = dialog.getDialogPane().lookupButton(OKButton);
 		loginButton.setDisable(true);
 
@@ -60,6 +60,8 @@ public class ChoiceWindow {
 		
 		
 		dialog.getDialogPane().setContent(grid);
+		
+		
 
 		dialog.setResultConverter(dialogButton -> {
 		    if (dialogButton == OKButton) {

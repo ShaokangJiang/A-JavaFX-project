@@ -39,7 +39,7 @@ public class CSVFileReader {
 	 * 
 	 * 
 	 */
-	public DataFrameIndex readCSV(File[] csvFile)
+	public static DataFrameIndex readCSV(File[] csvFile)
 			throws RuntimeException, FileNotFoundException {
 		Scanner csv = new Scanner(csvFile[0]);
 		String first;
@@ -79,14 +79,14 @@ public class CSVFileReader {
 	 * @param a
 	 * @return
 	 */
-	private Object[] convert(String a) throws RuntimeException {
+	private static Object[] convert(String a) throws RuntimeException {
 		String[] handle = a.split(",");
 		return new Object[] { handle[0],
 				Integer.parseInt(handle[1].split("Farm ")[1]),
 				Integer.parseInt(handle[2]) };
 	}
 
-	private String merge(Object[] a) {
+	private static String merge(Object[] a) {
 		String toRe = "";
 		for (Object b : a)
 			toRe += b.toString() + ",";
@@ -109,12 +109,14 @@ public class CSVFileReader {
 	 * @throws IOException
 	 * @throws Exception   if file I/O errors happens
 	 */
-	public void writeToCSV(DataFrame f, File csvFile)
+	public static void writeToCSV(DataFrame f, File csvFile)
 			throws RuntimeException, IOException {
+		if (f == null)
+			throw new IllegalArgumentException("Dataframe is null");
 		FileWriter out = new FileWriter(csvFile);
 		out.write(merge(f.getColumnNames()) + System.lineSeparator());
 		for (Object[] a : f.rows) {
-			a[1] = "Farm "+a[1];
+			a[1] = "Farm " + a[1];
 			out.write(merge(a) + System.lineSeparator());
 		}
 		out.flush();
