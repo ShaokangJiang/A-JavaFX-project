@@ -146,7 +146,7 @@ public class Farmer implements Comparable<Farmer> {
 		}
 
 		if (weightByYear.containsKey(year)) {// exist
-			if (weightByYear.get(year) <= weight)
+			if (weightByYear.get(year) < weight)
 				weightByYear.remove(year);
 			else
 				weightByYear.put(year, weightByYear.get(year) - weight);

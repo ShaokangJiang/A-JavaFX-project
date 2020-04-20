@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import javafx.scene.control.TableView;
 
@@ -20,7 +21,10 @@ public class FarmerManager implements Export<Object[]> {
 	protected DataFrameIndex ds;
 	private String information = "";
 	protected int totalWeight;
-
+	protected HashSet<Integer> allID;
+	private static final String dayPattern = "yyyy-MM-dd";
+	private static final SimpleDateFormat dateDayFormat = new SimpleDateFormat(
+			dayPattern);
 	/**
 	 * Constructor of this class, will be called once the entire program
 	 * starting. Need initialize the local private fields to represent them as
@@ -30,6 +34,7 @@ public class FarmerManager implements Export<Object[]> {
 		Farmers = new ArrayList<Farmer>();
 		ds = new DataFrameIndex(new String[] { "date", "farm_id", "weight" },
 				new Object[] { "2019-01-01", 1, 1 });
+		allID = new HashSet<Integer>();
 	}
 
 	/**
@@ -77,8 +82,10 @@ public class FarmerManager implements Export<Object[]> {
 				}
 			}
 		}
-		if (success)
+		if (success) {
 			ds.appendRow(new Object[] { day, id, weight });
+			allID.add(id);
+		}
 		totalWeight += weight;
 		return success;
 	}
@@ -164,12 +171,17 @@ public class FarmerManager implements Export<Object[]> {
 			return false;
 		}
 
+		try {
 		if (Farmers.get(idx).removeValue(day, weight)) {
 			ds.reduceAmount(id, day, weight);
 			totalWeight -= weight;
+			if(Farmers.get(idx).getTotalWeight()==0) removeData(id);
 			return true;
 		} else {
 			information = "day no exist or weight < 0";
+			return false;
+		}}catch(Exception e) {
+			information = "day not valid";
 			return false;
 		}
 	}
@@ -204,9 +216,17 @@ public class FarmerManager implements Export<Object[]> {
 			information = "id not found";
 			return false;
 		}
-		totalWeight -= Farmers.get(idx).getWeightByDay().get(day);
+		Date day1 = null;
+		try {
+			day1 = dateDayFormat.parse(day);
+		}catch(Exception e) {
+			information = "day not valid";
+			return false;
+		}
+		totalWeight -= Farmers.get(idx).getWeightByDay().get(day1);
 		if (Farmers.get(idx).removeValue(day)) {
 			ds.removeRow(id, day);
+			if(Farmers.get(idx).getTotalWeight()==0) removeData(id);
 			return true;
 		}
 		information = "day no exist or weight < 0";
@@ -235,6 +255,7 @@ public class FarmerManager implements Export<Object[]> {
 		totalWeight -= Farmers.get(idx).getTotalWeight();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		Farmer tmp = Farmers.remove(idx);
+		allID.remove(tmp.getId());
 		for (Date a : tmp.getWeightByDay().keySet()) {
 			ds.removeRow(id, dateFormat.format(a));
 		}

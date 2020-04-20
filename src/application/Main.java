@@ -1,6 +1,8 @@
 package application;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javafx.application.Application;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -163,7 +165,7 @@ public class Main extends Application {
 				case "Range Report":
 					Date[] pass = null;
 					try {
-						pass = ChoiceWindow.display();
+						pass = ChoiceWindow.displayDateRange();
 					} catch(Exception e) {
 						if(pass == null) {
 							alert1.display("You didn't choose any range!");
@@ -190,7 +192,50 @@ public class Main extends Application {
 			}
 		});
 		
-
+		Button addFarmerData = new Button("Add Data");
+		addFarmerData.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				Object[] pass = null;
+				try {
+					pass = ChoiceWindow.displayAddFarmer();
+				}catch(Exception e) {
+					if(pass == null) {
+						alert1.display("You didn't choose any data!");
+						return;
+					}
+				}
+				if(!Manager.addData((Integer)pass[1], (Integer)pass[2], (String)pass[0])) {
+					alert1.display("Error happen", Manager.getError());
+				}else {
+					alert1.display("Data import successfully");
+				}
+			}
+		});
+		
+		Button removeFarmerData = new Button("Remove Data");
+		removeFarmerData.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				Object[] pass = null;
+				try {
+					pass = ChoiceWindow.displayRemoveFarmer(Manager.allID.toArray(new Integer[0]));
+				}catch(Exception e) {
+					if(pass == null) {
+						alert1.display("You didn't choose any data!");
+						return;
+					}
+				}
+				if(!Manager.removeData((Integer)pass[1], (Integer)pass[2], (String)pass[0])) {
+					alert1.display("Error happen", Manager.getError());
+				}else {
+					alert1.display("Data import successfully");
+				}
+			}
+		});
+		
+		
+		
 		GridPane grid = new GridPane();
 		grid.setHgap(20);
 		grid.setVgap(10);
@@ -200,7 +245,9 @@ public class Main extends Application {
 		grid.add(importButton, 0, 0);
 		grid.add(exportButton, 1, 0);
 		grid.add(generate_report, 0, 1);
-
+		grid.add(addFarmerData, 0, 2);
+		grid.add(removeFarmerData, 1, 2);
+		
 		pane.setRight(grid);
 
 		Scene scene = new Scene(pane, 600, 400);
