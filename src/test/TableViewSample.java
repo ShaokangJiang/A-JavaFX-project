@@ -45,7 +45,7 @@ public class TableViewSample extends Application
 
         table.setEditable(true);
 
-        TableColumn firstNameCol = new TableColumn("First Name");
+        TableColumn<Person, String> firstNameCol = new TableColumn<Person, String>("First Name");
         firstNameCol.setMinWidth(100);
         firstNameCol.setCellValueFactory(
                 new PropertyValueFactory<Person, String>("firstName"));
