@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 
 public class DATE_RANGE_REPORT extends Report implements Calculate, Export<DATE_RANGE_REPORT.DATE_RANGE>{
 
@@ -37,7 +39,14 @@ public class DATE_RANGE_REPORT extends Report implements Calculate, Export<DATE_
    */
   public BorderPane Analize() {
     // TODO Auto-generated method stub
-    return null;
+	  BorderPane tmp = new BorderPane();
+	  GridPane grid = new GridPane();
+	  
+	  grid.add(new Label(start.toString()), 0, 0);
+	  grid.add(new Label(end.toString()), 0, 1);
+	  
+	  tmp.setLeft(grid);
+    return tmp;
   }
   /**
    * This class is used to store information that will be represented in table view in the 

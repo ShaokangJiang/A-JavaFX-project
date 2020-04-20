@@ -1,5 +1,7 @@
 package application;
 
+import java.util.Date;
+
 import javafx.application.Application;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleStringProperty;
@@ -13,15 +15,21 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import javafx.util.Pair;
 
 public class Main extends Application {
 
@@ -140,7 +148,47 @@ public class Main extends Application {
 			}
 		});
 		
-		
+		Button generate_report = new Button("Generate report");
+		generate_report.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				final String[] tmp = new String[] {"Farm report", "Range Report", "Monthly Report", "Annual Report"};
+				BorderPane show;
+				Report report;
+				switch(selectFun(tmp)) {
+				case "Farm report":
+					report = Manager.generateFarmReport();
+					show = ((FARM_REPORT)report).Analize();
+					break;
+				case "Range Report":
+					Date[] pass = null;
+					try {
+						pass = ChoiceWindow.display();
+					} catch(Exception e) {
+						if(pass == null) {
+							alert1.display("You didn't choose any range!");
+							return;
+						}
+					}
+					report = Manager.generateDateRangeReport(pass[0], pass[1]);
+					show = ((DATE_RANGE_REPORT)report).Analize();
+					break;
+				case "Monthly Report":
+					report = Manager.generateMonthReport();
+					show = ((MONTHLY_REPORT)report).Analize();
+					break;
+				case "Annual Report":
+					report = Manager.generateAnnualReport();
+					show = ((Annual_REPORT)report).Analize();
+					break;
+				default:
+					return;	
+				}
+				
+				Notification.display(show);
+				
+			}
+		});
 		
 
 		GridPane grid = new GridPane();
@@ -151,6 +199,7 @@ public class Main extends Application {
 
 		grid.add(importButton, 0, 0);
 		grid.add(exportButton, 1, 0);
+		grid.add(generate_report, 0, 1);
 
 		pane.setRight(grid);
 
@@ -158,6 +207,21 @@ public class Main extends Application {
 		s.setScene(scene);
 
 		s.show();
+	}
+	
+	private static String selectFun(String[] tmp) {
+		
+		
+		ChoiceDialog<String> dialog = new ChoiceDialog<String>( tmp[0], tmp);
+		dialog.setTitle("Select Function");
+		dialog.setHeaderText("Please choose the function you want");
+		
+		String result = dialog.showAndWait().get();
+
+		//System.out.print(result);
+		
+		return result;
+		
 	}
 
 	public static void main(String[] args) {
