@@ -1,5 +1,8 @@
 package application;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -19,8 +22,10 @@ public class DataFrameIndex extends DataFrame {
 	// I think we need to use those variables
 	// feel free to add more private data field
 
-	private HashMap<String, HashMap<Integer, Integer>> Index;
-
+	private HashMap<Date, HashMap<Integer, Integer>> Index;
+	private static final String dayPattern = "yyyy-MM-dd";
+	private static final SimpleDateFormat dateDayFormat = new SimpleDateFormat(
+			dayPattern);
 	/**
 	 * Do whatever the DateFarme is done You need to initialize the Hashmap as
 	 * well.
@@ -29,7 +34,7 @@ public class DataFrameIndex extends DataFrame {
 	 */
 	public DataFrameIndex(String[] column, Object[] dataType) {
 		super(column, dataType);
-		Index = new HashMap<String, HashMap<Integer, Integer>>();
+		Index = new HashMap<Date, HashMap<Integer, Integer>>();
 	}
 
 	/**
@@ -56,23 +61,26 @@ public class DataFrameIndex extends DataFrame {
 	 */
 	public void appendRow(Object[] row) throws IllegalArgumentException {
 		try {
+			Date day = dateDayFormat.parse((String) row[0]);
 			if (((Integer) row[2]) < 0)
 				throw new IllegalArgumentException("Invalid weight");
 			if (checkData(row)) {
-				if (Index.get(row[0]) != null) {
-					if (Index.get(row[0]).get(row[1]) != null) {
-						int idx = Index.get(row[0]).get(row[1]);
+				
+				if (Index.get(day) != null) {
+					if (Index.get(day).get(row[1]) != null) {
+						int idx = Index.get(day).get(row[1]);
 						rows.get(idx)[2] = (Integer) rows.get(idx)[2]
 								+ (Integer) row[2];
 					} else {
 						rows.add(row);
-						Index.get(row[0]).put((Integer) row[1],
+						Index.get(day).put((Integer) row[1],
 								rows.size() - 1);
 					}
 				} else {
 					rows.add(row);
-					Index.put((String) row[0], new HashMap<Integer, Integer>());
-					Index.get(row[0]).put((Integer) row[1], rows.size() - 1);
+					
+					Index.put(day, new HashMap<Integer, Integer>());
+					Index.get(day).put((Integer) row[1], rows.size() - 1);
 				}
 			} else
 				throw new IllegalArgumentException("Failed to compute the row data: "+System.lineSeparator()
@@ -93,10 +101,12 @@ public class DataFrameIndex extends DataFrame {
 	 * @param id  the id of the farm
 	 * @param day the day of the farm
 	 * @param val
+	 * @throws ParseException 
 	 */
-	public void setVal(int id, String day, int val) throws IllegalArgumentException{
+	public void setVal(int id, String day, int val) throws IllegalArgumentException, ParseException{
 		if (checkValid(id, day)) {
-			int idx = Index.get(day).get(id);
+			Date day1 = dateDayFormat.parse(day);
+			int idx = Index.get(day1).get(id);
 			rows.get(idx)[2] = val;
 		} else {
 			throw new IllegalArgumentException(
@@ -118,15 +128,17 @@ public class DataFrameIndex extends DataFrame {
 	 * 
 	 * @param id
 	 * @param day
+	 * @throws ParseException 
 	 * 
 	 */
-	public void removeRow(int id, String day) throws IllegalArgumentException {
+	public void removeRow(int id, String day) throws IllegalArgumentException, ParseException {
 		if (checkValid(id, day)) {
-			int idx = Index.get(day).get(id);
+			Date day1 = dateDayFormat.parse(day);
+			int idx = Index.get(day1).get(id);
 			rows.set(idx, null);
-			Index.get(day).remove(id);
-			if (Index.get(day).size() == 0) {
-				Index.remove(day);
+			Index.get(day1).remove(id);
+			if (Index.get(day1).size() == 0) {
+				Index.remove(day1);
 			}
 		} else {
 			throw new IllegalArgumentException(
@@ -134,9 +146,10 @@ public class DataFrameIndex extends DataFrame {
 		}
 	}
 
-	private boolean checkValid(int id, String day) {
-		if (Index.get(day) != null) {
-			if (Index.get(day).get(id) != null) {
+	private boolean checkValid(int id, String day) throws ParseException {
+		Date day1 = dateDayFormat.parse(day);
+		if (Index.get(day1) != null) {
+			if (Index.get(day1).get(id) != null) {
 				return true;
 			}
 		}
@@ -157,12 +170,14 @@ public class DataFrameIndex extends DataFrame {
 	 * 
 	 * @param id
 	 * @param day
+	 * @throws ParseException 
 	 */
-	public void reduceAmount(int id, String day, int weight) {
+	public void reduceAmount(int id, String day, int weight) throws ParseException {
 		if (weight < 0)
 			throw new IllegalArgumentException("Invalid weight");
 		if (checkValid(id, day)) {
-			int idx = Index.get(day).get(id);
+			Date day1 = dateDayFormat.parse(day);
+			int idx = Index.get(day1).get(id);
 			rows.get(idx)[2] = (Integer) rows.get(idx)[2] - weight;
 		} else {
 			throw new IllegalArgumentException(

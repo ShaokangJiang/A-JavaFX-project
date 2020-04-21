@@ -121,129 +121,178 @@ public class Main extends Application {
 				} catch (Exception as) {
 				}
 
-				if(tmp !=null) {
-				try {
-				if (!Manager.importData(tmp)) {
-					alert1.display(Manager.getError());
-				}
-				ObservableList<Object[]> data = FXCollections
-						.observableArrayList(Manager.ds.rows);
-				tableview.setItems(data);
-				}catch(Exception e) {
-					alert1.display("Unknow event happen, program will close", e.getMessage());
-					System.exit(1);
-				}
+				if (tmp != null) {
+					try {
+						if (!Manager.importData(tmp)) {
+							alert1.display(Manager.getError());
+						}
+						ObservableList<Object[]> data = FXCollections
+								.observableArrayList(
+										exceptNullRow(Manager.ds.rows));
+						tableview.setItems(data);
+					} catch (Exception e) {
+						alert1.display(
+								"Unknow event happen, program will close",
+								e.getMessage());
+						System.exit(1);
+					}
 				}
 			}
 		});
-		
+
 		Button exportButton = new Button("Export data");
 		exportButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
 				try {
-					if(ImportExportWindow.DisplayExport(s, Manager.ds)) {
-						alert1.display("Successfully output", "A result file representing all information is generated to "+ImportExportWindow.path1);
-					};
+					if (ImportExportWindow.DisplayExport(s, Manager.ds)) {
+						alert1.display("Successfully output",
+								"A result file representing all information is generated to "
+										+ ImportExportWindow.path1);
+					}
+					;
 				} catch (Exception as) {
 				}
 			}
 		});
-		
+
 		Button generate_report = new Button("Generate report");
 		generate_report.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				final String[] tmp = new String[] {"Farm report", "Range Report", "Monthly Report", "Annual Report"};
+				final String[] tmp = new String[] { "Farm report",
+						"Range Report", "Monthly Report", "Annual Report" };
 				BorderPane show;
 				Report report;
-				switch(selectFun(tmp)) {
+				switch (selectFun(tmp)) {
 				case "Farm report":
 					report = Manager.generateFarmReport();
-					show = ((FARM_REPORT)report).Analize();
+					show = ((FARM_REPORT) report).Analize();
 					break;
 				case "Range Report":
 					Date[] pass = null;
 					try {
 						pass = ChoiceWindow.displayDateRange();
-					} catch(Exception e) {
-							alert1.display("You didn't choose any range!");
-							return;
+					} catch (Exception e) {
+						alert1.display("You didn't choose any range!");
+						return;
 					}
 					report = Manager.generateDateRangeReport(pass[0], pass[1]);
-					show = ((DATE_RANGE_REPORT)report).Analize();
+					show = ((DATE_RANGE_REPORT) report).Analize();
 					break;
 				case "Monthly Report":
 					report = Manager.generateMonthReport();
-					show = ((MONTHLY_REPORT)report).Analize();
+					show = ((MONTHLY_REPORT) report).Analize();
 					break;
 				case "Annual Report":
 					report = Manager.generateAnnualReport();
-					show = ((Annual_REPORT)report).Analize();
+					show = ((Annual_REPORT) report).Analize();
 					break;
 				default:
-					return;	
+					return;
 				}
-				
+
 				Notification.display(show);
-				
+
 			}
 		});
-		
+
 		Button addFarmerData = new Button("Add Data");
 		addFarmerData.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
 				Object[] pass = null;
 				try {
-					pass = ChoiceWindow.displayAddFarmer();
-				}catch(Exception e) {
-						alert1.display("You didn't choose any data!");
-						return;
+					pass = ChoiceWindow.displayAddFarmer(Manager.Farmers.keySet());
+				} catch (Exception e) {
+					alert1.display("You didn't choose any data!");
+					return;
 				}
-				if(!Manager.addData((Integer)pass[1], (Integer)pass[2], (String)pass[0])) {
+				if (!Manager.addData((Integer) pass[1], (Integer) pass[2],
+						(String) pass[0])) {
 					alert1.display("Error happen", Manager.getError());
-				}else {
+				} else {
 					alert1.display("Data import successfully");
 				}
+				ObservableList<Object[]> data = FXCollections.observableArrayList(
+						exceptNullRow(Manager.ds.rows));
+				tableview.setItems(data);
 			}
 		});
-		
+
 		Button removeFarmerData = new Button("Remove Data");
 		removeFarmerData.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				final String[] tmp = new String[] {"Remove Farmer", "Reduce weight on a day", "Remove weight on a day"};
-				switch(selectFun(tmp)) {
+				final String[] tmp = new String[] { "Remove Farmer",
+						"Reduce weight on a day", "Remove weight on a day" };
+				ObservableList<Object[]> data;
+				Object[] pass;
+				switch (selectFun(tmp)) {
 				case "Remove Farmer":
-					break;
-				case "Reduce weight on a day":
-					Object[] pass = null;
+					Integer id = null;
 					try {
-						pass = ChoiceWindow.displayReduceFarmer(Manager.Farmers.keySet().toArray(new Integer[0]), Manager);
-					}catch(Exception e) {
-							alert1.display("You didn't choose any data!");
+						id = ChoiceWindow.displayRemoveFarmer(Manager.Farmers
+								.keySet().toArray(new Integer[0]), Manager);
+					} catch (Exception e) {
+						alert1.display("You didn't choose any data!");
 						return;
 					}
-					if(!Manager.removeData((Integer)pass[1], (Integer)pass[2], (String)pass[0])) {
+					if (!Manager.removeData(id)) {
 						alert1.display("Error happen", Manager.getError());
-					}else {
-						alert1.display("Data import successfully");
+					} else {
+						alert1.display("Data reduced successfully");
 					}
+					data = FXCollections.observableArrayList(
+							exceptNullRow(Manager.ds.rows));
+					tableview.setItems(data);
+					break;
+				case "Reduce weight on a day":
+					pass = null;
+					try {
+						pass = ChoiceWindow.displayReduceFarmer(Manager.Farmers
+								.keySet().toArray(new Integer[0]), Manager);
+					} catch (Exception e) {
+						alert1.display("You didn't choose any data!");
+						return;
+					}
+					if (!Manager.removeData((Integer) pass[1],
+							(Integer) pass[2], (String) pass[0])) {
+						alert1.display("Error happen", Manager.getError());
+					} else {
+						alert1.display("Data reduced successfully");
+					}
+					data = FXCollections.observableArrayList(
+							exceptNullRow(Manager.ds.rows));
+					tableview.setItems(data);
 					break;
 				case "Remove weight on a day":
-				
+					pass = null;
+					try {
+						pass = ChoiceWindow
+								.displayRemoveFarmerDay(Manager.Farmers.keySet()
+										.toArray(new Integer[0]), Manager);
+					} catch (Exception e) {
+						alert1.display("You didn't choose any data!");
+						return;
+					}
+					if (!Manager.removeData((Integer) pass[1],(String) pass[0])) {
+						alert1.display("Error happen", Manager.getError());
+					} else {
+						alert1.display("Data reduced successfully");
+					}
+					data = FXCollections.observableArrayList(
+							exceptNullRow(Manager.ds.rows));
+					tableview.setItems(data);
+
 					break;
 				default:
-					return;	
+					return;
 				}
-				
-				
+
 			}
 		});
-		
-		
-		
+
 		GridPane grid = new GridPane();
 		grid.setHgap(20);
 		grid.setVgap(10);
@@ -255,7 +304,7 @@ public class Main extends Application {
 		grid.add(generate_report, 0, 1);
 		grid.add(addFarmerData, 0, 2);
 		grid.add(removeFarmerData, 1, 2);
-		
+
 		pane.setRight(grid);
 
 		Scene scene = new Scene(pane, 600, 400);
@@ -263,19 +312,29 @@ public class Main extends Application {
 
 		s.show();
 	}
-	
-	private static String selectFun(String[] tmp) {		
-		ChoiceDialog<String> dialog = new ChoiceDialog<String>( tmp[0], tmp);
+
+	private static String selectFun(String[] tmp) {
+		ChoiceDialog<String> dialog = new ChoiceDialog<String>(tmp[0], tmp);
 		dialog.setTitle("Select Function");
 		dialog.setHeaderText("Please choose the function you want");
 		String result = dialog.showAndWait().get();
-		//System.out.print(result);
+		// System.out.print(result);
 		return result;
-		
+
 	}
 
 	public static void main(String[] args) {
 		argument = args;
 		launch();
+	}
+
+	private static List<Object[]> exceptNullRow(List<Object[]> a) {
+		List<Object[]> a1 = new ArrayList<Object[]>();
+		for (Object[] h : a) {
+			if (h != null) {
+				a1.add(h);
+			}
+		}
+		return a1;
 	}
 }

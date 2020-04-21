@@ -1,14 +1,10 @@
 package application;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import javafx.scene.control.TableView;
 
 /**
@@ -70,11 +66,11 @@ public class FarmerManager implements Export<Object[]> {
 		Boolean find = true;
 		Boolean success = false;
 		Farmer idx = Farmers.get(id);
-		if(idx != null) {
+		if (idx != null) {
 			success = idx.newValue(day, weight);
 			find = false;
 		}
-		
+
 		if (find) {
 			Farmer tmp = new Farmer(id);
 			success = tmp.newValue(day, weight);
@@ -158,25 +154,31 @@ public class FarmerManager implements Export<Object[]> {
 	public Boolean removeData(Integer id, Integer weight, String day)
 			throws IllegalArgumentException {
 		Farmer tmp = Farmers.get(id);
-		
-		if(tmp==null) {
+
+		if (tmp == null) {
 			information = "id not found";
 			return false;
 		}
-		
+
 		try {
 			if (tmp.removeValue(day, weight)) {
 				ds.reduceAmount(id, day, weight);
 				totalWeight -= weight;
-				if (tmp.getTotalWeight() == 0)
+
+				if (tmp.getTotalWeight() == 0) {
+					ds.removeRow(id, day);// remove the last line
 					removeData(id);
+				} else if (tmp.getWeightByDay()
+						.get(dateDayFormat.parse(day)) == null)
+					ds.removeRow(id, day);
 				return true;
 			} else {
 				information = "day no exist or weight < 0";
 				return false;
 			}
 		} catch (Exception e) {
-			information = "day not valid";
+			e.printStackTrace();
+			information = "day not valid\n";
 			return false;
 		}
 	}
@@ -202,16 +204,17 @@ public class FarmerManager implements Export<Object[]> {
 	 * @return true if success, false if this data doesn't exist and when day
 	 *         not exist/weight<0
 	 * @exception IllegalArgumentException some arument(date) not illegal
+	 * @throws ParseException
 	 */
 	public Boolean removeData(Integer id, String day)
 			throws IllegalArgumentException {
 		Farmer tmp = Farmers.get(id);
-		
-		if(tmp==null) {
+
+		if (tmp == null) {
 			information = "id not found";
 			return false;
 		}
-		//check day validation
+		// check day validation
 		Date day1 = null;
 		try {
 			day1 = dateDayFormat.parse(day);
@@ -219,16 +222,20 @@ public class FarmerManager implements Export<Object[]> {
 			information = "day not valid";
 			return false;
 		}
-		
-		totalWeight -= tmp.getWeightByDay().get(day1);
-		if (tmp.removeValue(day)) {
-			ds.removeRow(id, day);
-			if (tmp.getTotalWeight() == 0)
-				removeData(id);
-			return true;
+		try {
+			totalWeight -= tmp.getWeightByDay().get(day1);
+			if (tmp.removeValue(day)) {
+				ds.removeRow(id, day);
+				if (tmp.getTotalWeight() == 0)
+					removeData(id);
+				return true;
+			}
+			information = "day no exist or weight < 0";
+			return false;
+		} catch (Exception e) {
+			information = "day not valid";
+			return false;
 		}
-		information = "day no exist or weight < 0";
-		return false;
 	}
 
 	/**
@@ -238,22 +245,29 @@ public class FarmerManager implements Export<Object[]> {
 	 * 
 	 * @param id the id of the farmer
 	 * @return true if success, false if this data doesn't exist
+	 * @throws ParseException
+	 * @throws IllegalArgumentException
 	 */
-	public Boolean removeData(Integer id) {
+	public Boolean removeData(Integer id) throws IllegalArgumentException {
 		Farmer tmp = Farmers.get(id);
-		
-		if(tmp==null) {
+
+		if (tmp == null) {
 			information = "id not found";
 			return false;
 		}
-		
-		totalWeight -= tmp.getTotalWeight();
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		Farmers.remove(tmp.getId());
-		for (Date a : tmp.getWeightByDay().keySet()) {
-			ds.removeRow(id, dateFormat.format(a));
+		try {
+			totalWeight -= tmp.getTotalWeight();
+			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			Farmers.remove(tmp.getId());
+			for (Date a : tmp.getWeightByDay().keySet()) {
+				ds.removeRow(id, dateFormat.format(a));
+			}
+			return true;
+		} catch (Exception e) {
+			information = "day not valid";
+			return false;
 		}
-		return true;
+
 	}
 
 	/**
