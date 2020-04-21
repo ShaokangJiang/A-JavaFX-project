@@ -270,8 +270,8 @@ public class ChoiceWindow {
 		grid.add(ID, 1, 0);
 		grid.add(new Label("Date"), 0, 1);
 		grid.add(day, 1, 1);
-		grid.add(new Label("Date"), 0, 1);
-		grid.add(weight, 1, 1);
+		grid.add(new Label("Weight"), 0, 2);
+		grid.add(weight, 1, 2);
 
 		Node loginButton = dialog.getDialogPane().lookupButton(OKButton);
 		loginButton.setDisable(true);

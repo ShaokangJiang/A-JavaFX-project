@@ -4,8 +4,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import javafx.scene.control.TableView;
 
 /**
@@ -17,24 +20,23 @@ import javafx.scene.control.TableView;
 public class FarmerManager implements Export<Object[]> {
 
 	// Main class will use them, so it is needed to be in protected
-	protected List<Farmer> Farmers;
+	protected HashMap<Integer, Farmer> Farmers;
 	protected DataFrameIndex ds;
 	private String information = "";
 	protected int totalWeight;
-	protected HashSet<Integer> allID;
 	private static final String dayPattern = "yyyy-MM-dd";
 	private static final SimpleDateFormat dateDayFormat = new SimpleDateFormat(
 			dayPattern);
+
 	/**
 	 * Constructor of this class, will be called once the entire program
 	 * starting. Need initialize the local private fields to represent them as
 	 * empty. The ds is null to indicate this is a start
 	 */
 	public FarmerManager() {
-		Farmers = new ArrayList<Farmer>();
+		Farmers = new HashMap<Integer, Farmer>();
 		ds = new DataFrameIndex(new String[] { "date", "farm_id", "weight" },
 				new Object[] { "2019-01-01", 1, 1 });
-		allID = new HashSet<Integer>();
 	}
 
 	/**
@@ -67,25 +69,19 @@ public class FarmerManager implements Export<Object[]> {
 	public Boolean addData(Integer id, Integer weight, String day) {
 		Boolean find = true;
 		Boolean success = false;
-		for (Farmer abc : Farmers) {
-			if (abc.getId() == id) {
-				success = abc.newValue(day, weight);
-				find = false;
-				break;
-			}
+		Farmer idx = Farmers.get(id);
+		if(idx != null) {
+			success = idx.newValue(day, weight);
+			find = false;
 		}
+		
 		if (find) {
 			Farmer tmp = new Farmer(id);
 			success = tmp.newValue(day, weight);
-			for (int i = 0; i < Farmers.size(); i++) {
-				if (Farmers.get(i).compareTo(tmp) > 0) {
-					Farmers.add(i, tmp);
-				}
-			}
+			Farmers.put(id, tmp);
 		}
 		if (success) {
 			ds.appendRow(new Object[] { day, id, weight });
-			allID.add(id);
 		}
 		totalWeight += weight;
 		return success;
@@ -161,28 +157,25 @@ public class FarmerManager implements Export<Object[]> {
 	 */
 	public Boolean removeData(Integer id, Integer weight, String day)
 			throws IllegalArgumentException {
-		int idx = -1;
-		for (int i = 0; i < Farmers.size(); i++) {
-			if (Farmers.get(i).getId() == id) {
-				idx = i;
-				break;
-			}
-		}
-		if (idx < 0) {
+		Farmer tmp = Farmers.get(id);
+		
+		if(tmp==null) {
 			information = "id not found";
 			return false;
 		}
-
+		
 		try {
-		if (Farmers.get(idx).removeValue(day, weight)) {
-			ds.reduceAmount(id, day, weight);
-			totalWeight -= weight;
-			if(Farmers.get(idx).getTotalWeight()==0) removeData(id);
-			return true;
-		} else {
-			information = "day no exist or weight < 0";
-			return false;
-		}}catch(Exception e) {
+			if (tmp.removeValue(day, weight)) {
+				ds.reduceAmount(id, day, weight);
+				totalWeight -= weight;
+				if (tmp.getTotalWeight() == 0)
+					removeData(id);
+				return true;
+			} else {
+				information = "day no exist or weight < 0";
+				return false;
+			}
+		} catch (Exception e) {
 			information = "day not valid";
 			return false;
 		}
@@ -193,16 +186,9 @@ public class FarmerManager implements Export<Object[]> {
 		information = "";
 		return a;
 	}
-	
-	public Farmer findFarmer(int id) {
-		int idx = -1;
-		for (int i = 0; i < Farmers.size(); i++) {
-			if (Farmers.get(i).getId() == id) {
-				return Farmers.get(i);
-			}
-		}
-		return null;
 
+	public Farmer findFarmer(int id) {
+		return Farmers.get(id);
 	}
 
 	/**
@@ -219,28 +205,26 @@ public class FarmerManager implements Export<Object[]> {
 	 */
 	public Boolean removeData(Integer id, String day)
 			throws IllegalArgumentException {
-		int idx = -1;
-		for (int i = 0; i < Farmers.size(); i++) {
-			if (Farmers.get(i).getId() == id) {
-				idx = i;
-				break;
-			}
-		}
-		if (idx < 0) {
+		Farmer tmp = Farmers.get(id);
+		
+		if(tmp==null) {
 			information = "id not found";
 			return false;
 		}
+		//check day validation
 		Date day1 = null;
 		try {
 			day1 = dateDayFormat.parse(day);
-		}catch(Exception e) {
+		} catch (Exception e) {
 			information = "day not valid";
 			return false;
 		}
-		totalWeight -= Farmers.get(idx).getWeightByDay().get(day1);
-		if (Farmers.get(idx).removeValue(day)) {
+		
+		totalWeight -= tmp.getWeightByDay().get(day1);
+		if (tmp.removeValue(day)) {
 			ds.removeRow(id, day);
-			if(Farmers.get(idx).getTotalWeight()==0) removeData(id);
+			if (tmp.getTotalWeight() == 0)
+				removeData(id);
 			return true;
 		}
 		information = "day no exist or weight < 0";
@@ -256,21 +240,16 @@ public class FarmerManager implements Export<Object[]> {
 	 * @return true if success, false if this data doesn't exist
 	 */
 	public Boolean removeData(Integer id) {
-		int idx = -1;
-		for (int i = 0; i < Farmers.size(); i++) {
-			if (Farmers.get(i).getId() == id) {
-				idx = i;
-				break;
-			}
-		}
-		if (idx < 0) {
+		Farmer tmp = Farmers.get(id);
+		
+		if(tmp==null) {
 			information = "id not found";
 			return false;
 		}
-		totalWeight -= Farmers.get(idx).getTotalWeight();
+		
+		totalWeight -= tmp.getTotalWeight();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		Farmer tmp = Farmers.remove(idx);
-		allID.remove(tmp.getId());
+		Farmers.remove(tmp.getId());
 		for (Date a : tmp.getWeightByDay().keySet()) {
 			ds.removeRow(id, dateFormat.format(a));
 		}

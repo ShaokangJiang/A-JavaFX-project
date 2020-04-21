@@ -167,10 +167,8 @@ public class Main extends Application {
 					try {
 						pass = ChoiceWindow.displayDateRange();
 					} catch(Exception e) {
-						if(pass == null) {
 							alert1.display("You didn't choose any range!");
 							return;
-						}
 					}
 					report = Manager.generateDateRangeReport(pass[0], pass[1]);
 					show = ((DATE_RANGE_REPORT)report).Analize();
@@ -200,10 +198,8 @@ public class Main extends Application {
 				try {
 					pass = ChoiceWindow.displayAddFarmer();
 				}catch(Exception e) {
-					if(pass == null) {
 						alert1.display("You didn't choose any data!");
 						return;
-					}
 				}
 				if(!Manager.addData((Integer)pass[1], (Integer)pass[2], (String)pass[0])) {
 					alert1.display("Error happen", Manager.getError());
@@ -224,12 +220,10 @@ public class Main extends Application {
 				case "Reduce weight on a day":
 					Object[] pass = null;
 					try {
-						pass = ChoiceWindow.displayReduceFarmer(Manager.allID.toArray(new Integer[0]), Manager);
+						pass = ChoiceWindow.displayReduceFarmer(Manager.Farmers.keySet().toArray(new Integer[0]), Manager);
 					}catch(Exception e) {
-						if(pass == null) {
 							alert1.display("You didn't choose any data!");
-							return;
-						}
+						return;
 					}
 					if(!Manager.removeData((Integer)pass[1], (Integer)pass[2], (String)pass[0])) {
 						alert1.display("Error happen", Manager.getError());

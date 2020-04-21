@@ -2,7 +2,9 @@ package application;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
@@ -18,8 +20,8 @@ public class DATE_RANGE_REPORT extends Report implements Calculate, Export<DATE_
    * Instead of passing in the daate range, let user click a button to choose at first
    * @param st
    */
-  public DATE_RANGE_REPORT(List<Farmer> st, Date start, Date end) {
-    super(st);
+  public DATE_RANGE_REPORT(HashMap<Integer, Farmer> farmers, Date start, Date end) {
+    super(farmers);
     // TODO Auto-generated constructor stub
     this.start = start;
     this.end = end; 

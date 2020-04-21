@@ -2,7 +2,9 @@ package application;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import javafx.scene.control.TableView;
 import javafx.scene.layout.BorderPane;
@@ -10,7 +12,7 @@ import javafx.scene.layout.BorderPane;
 public class FARM_REPORT extends Report implements Calculate, Export<FARM_REPORT.FARM>{
   
 
-  public FARM_REPORT(List<Farmer> farmers) {
+  public FARM_REPORT(HashMap<Integer, Farmer> farmers) {
 	  super(farmers);
 	// TODO Auto-generated constructor stub
 }
