@@ -14,24 +14,22 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceDialog;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Region;
+import javafx.scene.text.Text;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import javafx.util.Pair;
 
 public class Main extends Application {
 
@@ -51,18 +49,11 @@ public class Main extends Application {
 		// TODO Auto-generated method stub
 		initialize();
 		BorderPane pane = new BorderPane();
-
+		
 		// ObservableList<Object[]> data
 		// = FXCollections.observableArrayList(Manager.ds.rows);
 
-		ObservableList<Object[]> data = FXCollections.observableArrayList(
-				new Object[] { "1990-01-01", 2, 25 },
-				new Object[] { "1990-01-02", 2, 25 },
-				new Object[] { "1990-01-03", 3, 25 },
-				new Object[] { "1990-01-04", 4, 25 },
-				new Object[] { "1990-01-05", 5, 25 },
-				new Object[] { "1990-01-01", 6, 25 },
-				new Object[] { "1990-01-01", 7, 25 });
+		ObservableList<Object[]> data = FXCollections.observableArrayList();
 
 		TableColumn<Object[], String> time = new TableColumn<Object[], String>(
 				"Time");
@@ -327,13 +318,14 @@ public class Main extends Application {
 		grid.add(generate_report, 0, 1);
 		grid.add(addFarmerData, 0, 2);
 		grid.add(removeFarmerData, 1, 2);
-
+		
 		pane.setRight(grid);
-
+		
 		Scene scene = new Scene(pane, 600, 400);
 		s.setScene(scene);
 
 		s.show();
+		alert1.display("Do you know? ", interfaceHelp());
 	}
 
 	private static String selectFun(String[] tmp) {
@@ -359,5 +351,15 @@ public class Main extends Application {
 			}
 		}
 		return a1;
+	}
+	
+	//use when user start using GUI
+	private static String interfaceHelp() {
+		return "Left panel is the dataview in system currently Left panel is the dataview in system currently Left panel is the dataview in system currently \nddd";
+	}
+	
+	//use when user start using command line
+	private static String commandHelp() {
+		return "";
 	}
 }

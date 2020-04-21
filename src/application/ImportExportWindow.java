@@ -33,8 +33,8 @@ import javafx.stage.Stage;
 public class ImportExportWindow extends Application {
 
 	static protected FileChooser fileChooser;
-	static protected String path1 = System.getProperty("user.home");
-
+	//static protected String path1 = System.getProperty("user.home");
+	static protected String path1 = System.getProperty("user.home")+"/Desktop/csv/";
 	/**
 	 * Show this import window
 	 * 
