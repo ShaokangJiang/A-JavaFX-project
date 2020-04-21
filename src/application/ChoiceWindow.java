@@ -110,7 +110,7 @@ public class ChoiceWindow {
 		});
 		Pair<Date, Date> result = dialog.showAndWait().get();
 
-		System.out.print(result.getKey() + "   " + result.getValue());
+		//System.out.print(result.getKey() + "   " + result.getValue());
 
 		return new Date[] { result.getKey(), result.getValue() };
 
@@ -175,10 +175,14 @@ public class ChoiceWindow {
 		loginButton.setDisable(true);
 
 		Day.textProperty().addListener((observable, oldValue, newValue) -> {
-			if (validateDate(newValue) && weight.getText().matches("\\d*")
-					&& weight.getText().compareTo("0") != 0 && !weight.getText().isEmpty()) {
-				loginButton.setDisable(false);
+			if (validateDate(newValue)) {
+
 				tmp.setText("");
+				if (weight.getText().matches("\\d*")
+						&& weight.getText().compareTo("0") != 0
+						&& !weight.getText().isEmpty()) {
+					loginButton.setDisable(false);
+				}
 			} else {
 				tmp.setText(
 						"Date should be in format: yyyy-MM-dd, e.g. 2019-01-01");
@@ -186,9 +190,12 @@ public class ChoiceWindow {
 			}
 		});
 
-		weight.textProperty().addListener((observable, oldValue, newValue) -> {
+		weight.textProperty().addListener((observable, oldValue, newValue) ->
+
+		{
 			if (newValue.matches("\\d*") && validateDate(Day.getText())) {
-				if (weight.getText().compareTo("0") != 0 && !weight.getText().isEmpty())
+				if (weight.getText().compareTo("0") != 0
+						&& !weight.getText().isEmpty())
 					loginButton.setDisable(false);
 			} else if (validateDate(Day.getText())) {
 				weight.setText(newValue.replaceAll("[^\\d]", ""));

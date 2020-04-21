@@ -25,7 +25,7 @@ public class Annual_REPORT extends Report implements Calculate, Export<Annual_RE
   @Override
   public BorderPane Analize() {
     // TODO Auto-generated method stub
-    return null;
+    return new BorderPane();
   }
   /**
    * This class is used to store information that will be represented in table view in the 

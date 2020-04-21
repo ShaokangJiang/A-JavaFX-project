@@ -167,7 +167,12 @@ public class Main extends Application {
 				switch (selectFun(tmp)) {
 				case "Farm report":
 					report = Manager.generateFarmReport();
-					show = ((FARM_REPORT) report).Analize();
+					if (report == null) {
+						alert1.display("Error hapen!", Manager.getError());
+						show = null;
+						return;
+					} else
+						show = ((FARM_REPORT) report).Analize();
 					break;
 				case "Range Report":
 					Date[] pass = null;
@@ -178,17 +183,33 @@ public class Main extends Application {
 						return;
 					}
 					report = Manager.generateDateRangeReport(pass[0], pass[1]);
-					show = ((DATE_RANGE_REPORT) report).Analize();
+					if (report == null) {
+						alert1.display("Error hapen!", Manager.getError());
+						show = null;
+						return;
+					} else
+						show = ((DATE_RANGE_REPORT) report).Analize();
 					break;
 				case "Monthly Report":
 					report = Manager.generateMonthReport();
-					show = ((MONTHLY_REPORT) report).Analize();
+					if (report == null) {
+						alert1.display("Error hapen!", Manager.getError());
+						show = null;
+						return;
+					} else
+						show = ((MONTHLY_REPORT) report).Analize();
 					break;
 				case "Annual Report":
 					report = Manager.generateAnnualReport();
-					show = ((Annual_REPORT) report).Analize();
+					if (report == null) {
+						alert1.display("Error hapen!", Manager.getError());
+						show = null;
+						return;
+					} else
+						show = ((Annual_REPORT) report).Analize();
 					break;
 				default:
+					alert1.display("Incorrecct choice");
 					return;
 				}
 
@@ -203,7 +224,8 @@ public class Main extends Application {
 			public void handle(ActionEvent event) {
 				Object[] pass = null;
 				try {
-					pass = ChoiceWindow.displayAddFarmer(Manager.Farmers.keySet());
+					pass = ChoiceWindow
+							.displayAddFarmer(Manager.Farmers.keySet());
 				} catch (Exception e) {
 					alert1.display("You didn't choose any data!");
 					return;
@@ -214,8 +236,8 @@ public class Main extends Application {
 				} else {
 					alert1.display("Data import successfully");
 				}
-				ObservableList<Object[]> data = FXCollections.observableArrayList(
-						exceptNullRow(Manager.ds.rows));
+				ObservableList<Object[]> data = FXCollections
+						.observableArrayList(exceptNullRow(Manager.ds.rows));
 				tableview.setItems(data);
 			}
 		});
@@ -276,7 +298,8 @@ public class Main extends Application {
 						alert1.display("You didn't choose any data!");
 						return;
 					}
-					if (!Manager.removeData((Integer) pass[1],(String) pass[0])) {
+					if (!Manager.removeData((Integer) pass[1],
+							(String) pass[0])) {
 						alert1.display("Error happen", Manager.getError());
 					} else {
 						alert1.display("Data reduced successfully");

@@ -90,7 +90,7 @@ public class FarmerManager implements Export<Object[]> {
 	 * @return a FARM_REPORT class contain current farmers information
 	 */
 	public FARM_REPORT generateFarmReport() {
-		if (ds == null) {
+		if (ds.rows.isEmpty()) {
 			information = "Should import first.";
 			return null;
 		}
@@ -104,7 +104,7 @@ public class FarmerManager implements Export<Object[]> {
 	 * @return a Annual_REPORT class contain current farmers information
 	 */
 	public Annual_REPORT generateAnnualReport() {
-		if (ds == null) {
+		if (ds.rows.isEmpty()) {
 			information = "Should import first.";
 			return null;
 		}
@@ -118,7 +118,7 @@ public class FarmerManager implements Export<Object[]> {
 	 * @return a DATE_RANGE_REPORT class contain current farmers information
 	 */
 	public DATE_RANGE_REPORT generateDateRangeReport(Date start, Date end) {
-		if (ds == null) {
+		if (ds.rows.isEmpty()) {
 			information = "Should import first.";
 			return null;
 		}
@@ -133,7 +133,7 @@ public class FarmerManager implements Export<Object[]> {
 	 * @return a MONTHLY_REPORT class contain current farmers information
 	 */
 	public MONTHLY_REPORT generateMonthReport() {
-		if (ds == null) {
+		if (ds.rows.isEmpty()) {
 			information = "Should import first.";
 			return null;
 		}
