@@ -21,9 +21,13 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
@@ -121,13 +125,18 @@ public class ChoiceWindow {
 		try {
 			startDate = dateDayFormat.parse(start);
 			endDate = dateDayFormat.parse(end);
+			String[] startA = start.split("-");
+			String[] endA = end.split("-");
+			
+			if (Integer.parseInt(startA[1]) == 0|| Integer.parseInt(startA[2]) == 0
+					|| Integer.parseInt(endA[1]) == 0|| Integer.parseInt(endA[2]) == 0)
+				return false;
 			return true;
 		} catch (Exception e) {
 			return false;
 		}
 	}
 
-	// FIXME
 	public static Object[] displayAddFarmer(Set<Integer> integers) {
 		Dialog<Object[]> dialog = new Dialog<>();
 		dialog.setTitle("Choice window");
@@ -231,24 +240,26 @@ public class ChoiceWindow {
 
 	private static ComboBox<Integer> ID;
 	private static ComboBox<String> day;
+	private static ComboBox<Integer> year;
 	private static int maxWeight;
-	
+
 	private static void showRemoveHint() {
-		if(!removeShow) {
-			alert1.display("Do you know?", "Function for each item: "
-					+ "\n  Remove Farmer -- \n" + 
-					"	Reduce weight on a day -- \n" + 
-					"	Remove weight on a day -- "
-					+ "\nThis window will show only once");
+		if (!removeShow) {
+			alert1.display("Do you know?",
+					"Function for each item: " + "\n  Remove Farmer -- \n"
+							+ "	Reduce weight on a day -- \n"
+							+ "	Remove weight on a day -- "
+							+ "\nThis window will show only once");
 			removeShow = true;
-		};
+		}
+		;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static Object[] displayReduceFarmer(Integer[] integers,
 			FarmerManager Manager) {
 		showRemoveHint();
-		
+
 		if (integers.length == 0)
 			alert1.display("No data to choose");
 		// TODO Auto-generated method stub
@@ -476,6 +487,180 @@ public class ChoiceWindow {
 			}
 			return null;
 		});
+		Integer result = dialog.showAndWait().get();
+
+		return result;
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static Integer[] displayAskIdYear(Integer[] integers,
+			FarmerManager Manager) {
+
+		if (integers.length == 0)
+			alert1.display("No data to choose");
+		// TODO Auto-generated method stub
+		Dialog<Integer[]> dialog = new Dialog<>();
+		dialog.setTitle("Choice window");
+		dialog.setHeaderText("Please choose Id and year:");
+
+		ButtonType OKButton = new ButtonType("Ok", ButtonData.OK_DONE);
+		dialog.getDialogPane().getButtonTypes().addAll(OKButton,
+				ButtonType.CANCEL);
+
+		ToggleGroup group = new ToggleGroup();
+		RadioButton button1 = new RadioButton(
+				"Choose id first then year will shown with available value to choose");
+		button1.setToggleGroup(group);
+		button1.setSelected(true);
+
+		BorderPane pane = new BorderPane();
+		pane.setTop(button1);
+
+		RadioButton button2 = new RadioButton("Use all available data");
+		button2.setToggleGroup(group);
+
+		GridPane grid = new GridPane();
+		grid.setHgap(10);
+		grid.setVgap(10);
+		grid.setPadding(new Insets(20, 150, 10, 10));
+
+		ID = new ComboBox<Integer>(FXCollections.observableArrayList(integers));
+		year = new ComboBox<Integer>(
+				FXCollections.observableArrayList(new Integer[] { null }));
+
+		ID.getSelectionModel().selectedItemProperty()
+				.addListener(new ChangeListener() {
+					@Override
+					public void changed(ObservableValue ov, Object t,
+							Object t1) {
+						HashSet<Integer> toUse = new HashSet<Integer>();
+						for (Date tmp : Manager.findFarmer((Integer) t1)
+								.getWeightByYear().keySet()) {
+							toUse.add(1900 + tmp.getYear());
+						}
+						year.setItems(FXCollections
+								.observableList(new ArrayList<Integer>(toUse)));
+					}
+				});
+
+		grid.add(new Label("Farmer_id"), 0, 0);
+		grid.add(ID, 1, 0);
+		grid.add(new Label("Date"), 0, 1);
+		grid.add(year, 1, 1);
+		// grid.add(button2, 0, 2);
+
+		Node loginButton = dialog.getDialogPane().lookupButton(OKButton);
+		loginButton.setDisable(true);
+
+		group.selectedToggleProperty()
+				.addListener(new ChangeListener<Toggle>() {
+					public void changed(ObservableValue<? extends Toggle> ob,
+							Toggle o, Toggle n) {
+
+						if (n.equals(button1)) {// choose
+							ID.setDisable(false);
+							year.setDisable(false);
+							if (year.getValue() == null) {
+								loginButton.setDisable(true);
+							} else
+								loginButton.setDisable(false);
+						} else if (n.equals(button2)) {// use all
+							ID.setDisable(true);
+							year.setDisable(true);
+							loginButton.setDisable(false);
+						}
+					}
+				});
+
+		year.getSelectionModel().selectedItemProperty()
+				.addListener(new ChangeListener() {
+					@Override
+					public void changed(ObservableValue ov, Object t,
+							Object t1) {
+						if (t1 != null) {
+							loginButton.setDisable(false);
+						}
+					}
+				});
+
+		BorderPane ano = new BorderPane();
+		ano.setTop(grid);
+		ano.setBottom(button2);
+		pane.setBottom(ano);
+		dialog.getDialogPane().setContent(pane);
+
+		dialog.setResultConverter(dialogButton -> {
+			if (dialogButton == OKButton) {
+				if (button2.isSelected()) {
+					return new Integer[] { null };
+				} else {
+					return new Integer[] { ID.getValue(), year.getValue() };
+				}
+			}
+			return null;
+		});
+
+		Integer[] result = dialog.showAndWait().get();
+
+		return result;
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static Integer displayAskYear(FarmerManager Manager) {
+
+		if (Manager.ds.rows.size() == 0)
+			alert1.display("No data to choose");
+		// TODO Auto-generated method stub
+		Dialog<Integer> dialog = new Dialog<>();
+		dialog.setTitle("Choice window");
+		dialog.setHeaderText("Please choose year:");
+
+		ButtonType OKButton = new ButtonType("Ok", ButtonData.OK_DONE);
+		dialog.getDialogPane().getButtonTypes().addAll(OKButton,
+				ButtonType.CANCEL);
+
+		GridPane grid = new GridPane();
+		grid.setHgap(10);
+		grid.setVgap(10);
+		grid.setPadding(new Insets(20, 150, 10, 10));
+
+		Set<Integer> toUse = new HashSet<Integer>();
+		for (Date a : Manager.ds.Index.keySet()) {
+			toUse.add(a.getYear() + 1900);
+		}
+
+		year = new ComboBox<Integer>(FXCollections
+				.observableArrayList(toUse.toArray(new Integer[0])));
+
+		grid.add(new Label("Year"), 0, 1);
+		grid.add(year, 1, 1);
+		// grid.add(button2, 0, 2);
+
+		Node loginButton = dialog.getDialogPane().lookupButton(OKButton);
+		loginButton.setDisable(true);
+
+		year.getSelectionModel().selectedItemProperty()
+				.addListener(new ChangeListener() {
+					@Override
+					public void changed(ObservableValue ov, Object t,
+							Object t1) {
+						if (t1 != null) {
+							loginButton.setDisable(false);
+						} else {
+							loginButton.setDisable(true);
+						}
+					}
+				});
+
+		dialog.getDialogPane().setContent(grid);
+
+		dialog.setResultConverter(dialogButton -> {
+			if (dialogButton == OKButton) {
+				return year.getValue();
+			}
+			return null;
+		});
+
 		Integer result = dialog.showAndWait().get();
 
 		return result;

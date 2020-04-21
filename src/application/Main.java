@@ -49,7 +49,7 @@ public class Main extends Application {
 		// TODO Auto-generated method stub
 		initialize();
 		BorderPane pane = new BorderPane();
-		
+
 		// ObservableList<Object[]> data
 		// = FXCollections.observableArrayList(Manager.ds.rows);
 
@@ -154,19 +154,36 @@ public class Main extends Application {
 				final String[] tmp = new String[] { "Farm report",
 						"Range Report", "Monthly Report", "Annual Report" };
 				BorderPane show;
+				Date[] pass;
 				Report report;
+				Date day = null;
+				Integer[] farm;
 				switch (selectFun(tmp)) {
 				case "Farm report":
-					report = Manager.generateFarmReport();
+					// ask for id and year
+					try {
+						farm = ChoiceWindow.displayAskIdYear(Manager.Farmers
+								.keySet().toArray(new Integer[0]), Manager);
+					} catch (Exception e) {
+						alert1.display("You didn't choose any option!");
+						return;
+					}
+					if (farm[0] != null) {
+						report = Manager.generateFarmReport(farm[0], farm[1]);
+					} else {
+						report = Manager.generateFarmReport(null, null);
+					}
+
 					if (report == null) {
-						alert1.display("Error hapen!", Manager.getError());
+						alert1.display("Error happen!", Manager.getError());
 						show = null;
 						return;
 					} else
 						show = ((FARM_REPORT) report).Analize();
+
 					break;
 				case "Range Report":
-					Date[] pass = null;
+					pass = null;
 					try {
 						pass = ChoiceWindow.displayDateRange();
 					} catch (Exception e) {
@@ -182,7 +199,8 @@ public class Main extends Application {
 						show = ((DATE_RANGE_REPORT) report).Analize();
 					break;
 				case "Monthly Report":
-					report = Manager.generateMonthReport();
+					// ask for month
+					report = Manager.generateMonthReport(day);
 					if (report == null) {
 						alert1.display("Error hapen!", Manager.getError());
 						show = null;
@@ -191,7 +209,18 @@ public class Main extends Application {
 						show = ((MONTHLY_REPORT) report).Analize();
 					break;
 				case "Annual Report":
-					report = Manager.generateAnnualReport();
+					// ask for year
+					Integer year = 0;
+					try {
+						year = ChoiceWindow.displayAskYear(Manager);
+					} catch (Exception e) {
+						alert1.display("You didn't choose any data!");
+						return;
+					}
+					if (year == null)
+						return;
+					//System.out.println(year);
+					report = Manager.generateAnnualReport(year);
 					if (report == null) {
 						alert1.display("Error hapen!", Manager.getError());
 						show = null;
@@ -318,15 +347,16 @@ public class Main extends Application {
 		grid.add(generate_report, 0, 1);
 		grid.add(addFarmerData, 0, 2);
 		grid.add(removeFarmerData, 1, 2);
-		
+
 		pane.setRight(grid);
-		
+
 		Scene scene = new Scene(pane, 600, 400);
 		s.setScene(scene);
 
 		s.show();
 		alert1.display("Do you know? ", interfaceHelp());
-		alert1.display("Notification", "This program is intended for a2 submission only. Some parts are still in construction");
+		alert1.display("Notification",
+				"This program is intended for a2 submission only. Some parts are still in construction");
 	}
 
 	private static String selectFun(String[] tmp) {
@@ -353,19 +383,19 @@ public class Main extends Application {
 		}
 		return a1;
 	}
-	
-	//use when user start using GUI
+
+	// use when user start using GUI
 	private static String interfaceHelp() {
 		return "Left panel is the dataview currently in system. "
 				+ "\nBotton Usage:"
-				+ "\n  Import data -- Import data from csv, you could select multiple files\n" + 
-				"	Export data -- Export current data into csv file\n" + 
-				"	Generate report -- Generate and show report based on your request and current data in system\n" + 
-				"	Add Data -- Add data for a Farmer, use a id that doesn't exist in the system will create a new Farmer\n" + 
-				"	Remove Data -- Remove data in different situation";
+				+ "\n  Import data -- Import data from csv, you could select multiple files\n"
+				+ "	Export data -- Export current data into csv file\n"
+				+ "	Generate report -- Generate and show report based on your request and current data in system\n"
+				+ "	Add Data -- Add data for a Farmer, use a id that doesn't exist in the system will create a new Farmer\n"
+				+ "	Remove Data -- Remove data in different situation";
 	}
-	
-	//use when user start using command line
+
+	// use when user start using command line
 	private static String commandHelp() {
 		return "";
 	}

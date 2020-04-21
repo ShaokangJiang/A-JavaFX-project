@@ -1,6 +1,5 @@
 package application;
 
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -9,32 +8,53 @@ import java.util.Set;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.BorderPane;
 
-public class Annual_REPORT extends Report implements Calculate, Export<Annual_REPORT.Annual>{
+/**
+ * Assignment requirement: Ask for year.
+ * 
+ * Then display list of total weight and percent of total weight of all farms by
+ * farm for the year.
+ * 
+ * Sort by Farm ID, or you can allow the user to select display ascending or
+ * descending by weight.
+ * 
+ * @author shaokang
+ *
+ */
+public class Annual_REPORT extends Report
+		implements Calculate, Export<Annual_REPORT.Annual> {
 
-  public Annual_REPORT(HashMap<Integer, Farmer> farmers) {
-    super(farmers);
-    // TODO Auto-generated constructor stub
-  }
+	protected int year;
+	protected int farmersTotalWeight;
+	
+	public Annual_REPORT(HashMap<Integer, Farmer> farmers, int year, int farmersTotalWeight) {
+		super(farmers);
+		// TODO Auto-generated constructor stub
+		this.year = year; 
+		this.farmersTotalWeight = farmersTotalWeight;
+	}
 
-  @Override
-  public DataFrame export(TableView<Annual> a) {
-    // TODO Auto-generated method stub
-    return null;
-  }
+	@Override
+	public DataFrame export(TableView<Annual> a) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-  @Override
-  public BorderPane Analize() {
-    // TODO Auto-generated method stub
-    return new BorderPane();
-  }
-  /**
-   * This class is used to store information that will be represented in table view in the 
-   * @author Shaokang Jiang
-   *
-   */
-  protected class Annual{
-    protected int id;
-    protected Date year;
-    protected int Num;
-  }
+	@Override
+	public BorderPane Analize() {
+		// TODO Auto-generated method stub
+		return new BorderPane();
+	}
+
+	/**
+	 * This class is used to store information that will be represented in table
+	 * view in the
+	 * 
+	 * @author Shaokang Jiang
+	 *
+	 */
+	protected class Annual {
+		protected int id;
+		protected Date year;
+		protected int Num;
+	}
 }

@@ -89,12 +89,12 @@ public class FarmerManager implements Export<Object[]> {
 	 * 
 	 * @return a FARM_REPORT class contain current farmers information
 	 */
-	public FARM_REPORT generateFarmReport() {
+	public FARM_REPORT generateFarmReport(Integer id, Integer year) {
 		if (ds.rows.isEmpty()) {
 			information = "Should import first.";
 			return null;
 		}
-		return new FARM_REPORT(Farmers);
+		return new FARM_REPORT(Farmers, id, year, totalWeight);
 	}
 
 	/**
@@ -103,12 +103,12 @@ public class FarmerManager implements Export<Object[]> {
 	 * 
 	 * @return a Annual_REPORT class contain current farmers information
 	 */
-	public Annual_REPORT generateAnnualReport() {
+	public Annual_REPORT generateAnnualReport(int year) {
 		if (ds.rows.isEmpty()) {
 			information = "Should import first.";
 			return null;
 		}
-		return new Annual_REPORT(Farmers);
+		return new Annual_REPORT(Farmers, year, totalWeight);
 	}
 
 	/**
@@ -123,7 +123,7 @@ public class FarmerManager implements Export<Object[]> {
 			return null;
 		}
 
-		return new DATE_RANGE_REPORT(Farmers, start, end);
+		return new DATE_RANGE_REPORT(Farmers, start, end, totalWeight);
 	}
 
 	/**
@@ -132,12 +132,12 @@ public class FarmerManager implements Export<Object[]> {
 	 * 
 	 * @return a MONTHLY_REPORT class contain current farmers information
 	 */
-	public MONTHLY_REPORT generateMonthReport() {
+	public MONTHLY_REPORT generateMonthReport(Date askFor) {
 		if (ds.rows.isEmpty()) {
 			information = "Should import first.";
 			return null;
 		}
-		return new MONTHLY_REPORT(Farmers);
+		return new MONTHLY_REPORT(Farmers, askFor, totalWeight);
 	}
 
 	/**

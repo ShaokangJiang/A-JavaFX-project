@@ -22,7 +22,7 @@ public class DataFrameIndex extends DataFrame {
 	// I think we need to use those variables
 	// feel free to add more private data field
 
-	private HashMap<Date, HashMap<Integer, Integer>> Index;
+	protected HashMap<Date, HashMap<Integer, Integer>> Index;
 	private static final String dayPattern = "yyyy-MM-dd";
 	private static final SimpleDateFormat dateDayFormat = new SimpleDateFormat(
 			dayPattern);
