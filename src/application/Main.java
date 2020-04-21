@@ -326,6 +326,7 @@ public class Main extends Application {
 
 		s.show();
 		alert1.display("Do you know? ", interfaceHelp());
+		alert1.display("Notification", "This program is intended for a2 submission only. Some parts are still in construction");
 	}
 
 	private static String selectFun(String[] tmp) {
@@ -355,7 +356,13 @@ public class Main extends Application {
 	
 	//use when user start using GUI
 	private static String interfaceHelp() {
-		return "Left panel is the dataview in system currently Left panel is the dataview in system currently Left panel is the dataview in system currently \nddd";
+		return "Left panel is the dataview currently in system. "
+				+ "\nBotton Usage:"
+				+ "\n  Import data -- Import data from csv, you could select multiple files\n" + 
+				"	Export data -- Export current data into csv file\n" + 
+				"	Generate report -- Generate and show report based on your request and current data in system\n" + 
+				"	Add Data -- Add data for a Farmer, use a id that doesn't exist in the system will create a new Farmer\n" + 
+				"	Remove Data -- Remove data in different situation";
 	}
 	
 	//use when user start using command line

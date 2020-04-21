@@ -43,6 +43,7 @@ public class ChoiceWindow {
 			dayPattern);
 	private static Date startDate;
 	private static Date endDate;
+	private static Boolean removeShow = false;
 
 	public static Date[] displayDateRange() {
 		// TODO Auto-generated method stub
@@ -110,7 +111,7 @@ public class ChoiceWindow {
 		});
 		Pair<Date, Date> result = dialog.showAndWait().get();
 
-		//System.out.print(result.getKey() + "   " + result.getValue());
+		// System.out.print(result.getKey() + " " + result.getValue());
 
 		return new Date[] { result.getKey(), result.getValue() };
 
@@ -231,10 +232,23 @@ public class ChoiceWindow {
 	private static ComboBox<Integer> ID;
 	private static ComboBox<String> day;
 	private static int maxWeight;
+	
+	private static void showRemoveHint() {
+		if(!removeShow) {
+			alert1.display("Do you know?", "Function for each item: "
+					+ "\n  Remove Farmer -- \n" + 
+					"	Reduce weight on a day -- \n" + 
+					"	Remove weight on a day -- "
+					+ "\nThis window will show only once");
+			removeShow = true;
+		};
+	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static Object[] displayReduceFarmer(Integer[] integers,
 			FarmerManager Manager) {
+		showRemoveHint();
+		
 		if (integers.length == 0)
 			alert1.display("No data to choose");
 		// TODO Auto-generated method stub
@@ -340,6 +354,7 @@ public class ChoiceWindow {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static Object[] displayRemoveFarmerDay(Integer[] integers,
 			FarmerManager Manager) {
+		showRemoveHint();
 		if (integers.length == 0)
 			alert1.display("No data to choose");
 		// TODO Auto-generated method stub
@@ -414,6 +429,7 @@ public class ChoiceWindow {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static Integer displayRemoveFarmer(Integer[] integers,
 			FarmerManager Manager) {
+		showRemoveHint();
 		if (integers.length == 0)
 			alert1.display("No data to choose");
 		// TODO Auto-generated method stub
