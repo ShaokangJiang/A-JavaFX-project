@@ -168,6 +168,8 @@ public class ChoiceWindow {
 				if (!integers.contains(Integer.parseInt(newValue))) {
 					tmp.setText("Notice: " + newValue
 							+ " is a new Farm id. It will be added to the table. ");
+				}else {
+					tmp.setText("");
 				}
 			} catch (Exception e) {
 				tmp.setText("Please input a number as id");

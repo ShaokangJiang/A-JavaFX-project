@@ -102,7 +102,7 @@ public class ImportExportWindow extends Application {
 					return Import(path.getText());
 				} catch (FileNotFoundException | RuntimeException e) {
 					// TODO Auto-generated catch block
-					alert1.display("Error happen: \n" + e.getMessage());
+					alert1.display("Please import valid data:" + e.getMessage());
 					return null;
 				}
 			}

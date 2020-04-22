@@ -112,7 +112,7 @@ public class Main extends Application {
 				if (tmp != null) {
 					try {
 						if (!Manager.importData(tmp)) {
-							alert1.display(Manager.getError());
+							alert1.display("Please import valid data:",Manager.getError());
 						}
 						ObservableList<Object[]> data = FXCollections
 								.observableArrayList(

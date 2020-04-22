@@ -87,7 +87,9 @@ public class DataFrameIndex extends DataFrame {
 						+ "  require: Date(2019-01-01),id(Farm 1), weight(25)"
 						+ System.lineSeparator() + "  received: " + row[0]+","+row[1]+","+row[2]);
 		} catch (Exception e) {
-			throw new IllegalArgumentException("Indexing error");
+			throw new IllegalArgumentException("Failed to compute the row data: "+System.lineSeparator()
+			+ "  require: Date(2019-01-01),id(Farm 1), weight(25)"
+			+ System.lineSeparator() + "  received: " + row[0]+","+row[1]+","+row[2]);
 		}
 
 	}
