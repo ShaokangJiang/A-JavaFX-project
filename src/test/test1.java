@@ -15,10 +15,9 @@ public class test1 {
 	static SimpleDateFormat simpleMonDateFormat = new SimpleDateFormat("yyyy-MM");
 	
 	public static void main(String[] args) throws ParseException {
-		long millis=System.currentTimeMillis();
-		Date date=simpleDateFormat.parse("2019-00-00");
-		
-		System.out.println(date);
+		Date tmp = new Date();
+		tmp.setTime(18000000);
+		System.out.println(tmp);
 	}
 
 }

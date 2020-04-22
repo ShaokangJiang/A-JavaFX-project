@@ -38,22 +38,22 @@ import javafx.util.Callback;
  * Sort by Farm ID, or you can allow the user to select display ascending or
  * descending by weight.
  * 
- * id | total weight | percent of total weight
- * Integer | Integer | Double
+ * id | total weight | percent of total weight Integer | Integer | Double
+ * 
  * @author shaokang
  *
  */
-public class Annual_REPORT extends Report
-		implements Calculate, Export{
+public class Annual_REPORT extends Report implements Calculate, Export {
 
 	protected int year;
 	protected int farmersTotalWeight;
 	private static DecimalFormat df = new DecimalFormat("#.00");
-	
-	public Annual_REPORT(HashMap<Integer, Farmer> farmers, int year, int farmersTotalWeight) {
+
+	public Annual_REPORT(HashMap<Integer, Farmer> farmers, int year,
+			int farmersTotalWeight) {
 		super(farmers);
 		// TODO Auto-generated constructor stub
-		this.year = year; 
+		this.year = year;
 		this.farmersTotalWeight = farmersTotalWeight;
 	}
 
@@ -66,14 +66,12 @@ public class Annual_REPORT extends Report
 	@Override
 	public BorderPane Analize() {
 		// TODO Auto-generated method stub
-		
+
 		BorderPane pane = new BorderPane();
 
-		ObservableList<Object[]> data = FXCollections.observableArrayList(convert());
+		ObservableList<Object[]> data = FXCollections
+				.observableArrayList(convert());
 
-		
-		
-		
 		TableColumn<Object[], Integer> id = new TableColumn<Object[], Integer>(
 				"ID");
 		id.setCellValueFactory(
@@ -108,8 +106,8 @@ public class Annual_REPORT extends Report
 							CellDataFeatures<Object[], String> p) {
 						// p.getValue() returns the Person instance for a
 						// particular TableView row
-						return new ReadOnlyObjectWrapper<>(df.format(
-								((Double) p.getValue()[2])));
+						return new ReadOnlyObjectWrapper<>(
+								df.format(((Double) p.getValue()[2])));
 					}
 				});
 
@@ -121,7 +119,7 @@ public class Annual_REPORT extends Report
 		tableview.getColumns().addAll(id, total, percent);
 
 		pane.setLeft(tableview);
-		
+
 		GridPane grid = new GridPane();
 		grid.setHgap(10);
 		grid.setVgap(10);
@@ -134,8 +132,7 @@ public class Annual_REPORT extends Report
 				alert1.display("Still in construction");
 			}
 		});
-		
-		
+
 		Button Export = new Button("Export");
 		Export.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -143,17 +140,32 @@ public class Annual_REPORT extends Report
 				alert1.display("Still in construction");
 			}
 		});
-		
+
 		grid.add(Filter, 0, 0);
 		grid.add(Export, 0, 1);
 
 		pane.setRight(grid);
-		
+
 		return pane;
 	}
 
+	/**
+	 * id | total weight | percent of total weight 
+	 * Integer | Integer | Double
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("deprecation")
 	private List<Object[]> convert() {
 		// TODO Auto-generated method stub
-		return null;
+		Date tmp = new Date(18000000);//set it to be 1970-01-01
+		tmp.setYear(year-1900);
+
+		List<Object[]> toRe = new ArrayList<Object[]>();
+		for(Farmer a:Farmers) {
+			int weight = a.getWeightByYear().get(tmp);
+			toRe.add(new Object[] {a.getId(),weight,(double)weight*100/(double)farmersTotalWeight});
+		}
+		return toRe;
 	}
 }
