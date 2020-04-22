@@ -25,6 +25,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn.CellDataFeatures;
+import javafx.scene.control.TableColumn.SortType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.util.Callback;
@@ -116,6 +117,7 @@ public class Annual_REPORT extends Report implements Calculate, Export {
 		tableview.setItems(data);
 
 		id.setSortable(true);
+		id.setSortType(SortType.DESCENDING);
 		tableview.getColumns().addAll(id, total, percent);
 
 		pane.setLeft(tableview);
@@ -146,6 +148,12 @@ public class Annual_REPORT extends Report implements Calculate, Export {
 
 		pane.setRight(grid);
 
+		alert1.display("This effort will display the annual report for each farmer in year"+year+
+				"\nRepresentation of each field:"
+				+ "\n  id -- Farmer_id in decending order"
+				+ "\n  tot_weight -- the tital weight for "
+				+ "\n  percent -- weight of this farm/weight of all farmers in this year");
+		
 		return pane;
 	}
 
@@ -162,10 +170,17 @@ public class Annual_REPORT extends Report implements Calculate, Export {
 		tmp.setYear(year-1900);
 
 		List<Object[]> toRe = new ArrayList<Object[]>();
-		for(Farmer a:Farmers) {
-			int weight = a.getWeightByYear().get(tmp);
-			toRe.add(new Object[] {a.getId(),weight,(double)weight*100/(double)farmersTotalWeight});
+		int tot = 0;
+		for(Farmer a:Farmers) {//accumulate
+			tot += a.getWeightByYear().get(tmp);
 		}
+		
+		for(Farmer a:Farmers) {//accumulate
+			int weight = a.getWeightByYear().get(tmp);
+			
+			toRe.add(new Object[] {a.getId(),weight,(double)weight*100/(double)tot});
+		}
+		
 		return toRe;
 	}
 }

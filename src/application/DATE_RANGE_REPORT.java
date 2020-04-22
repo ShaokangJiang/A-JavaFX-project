@@ -1,15 +1,27 @@
 package application;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.util.Callback;
 
 /**
  * 
@@ -24,7 +36,8 @@ import javafx.scene.layout.GridPane;
  * descending order by weight or percentage.
  * 
  * 
- * ID
+ * ID | total milk weight per farm in the day range | percentage of the total
+ * Integer | Integer | Double
  * 
  * @author shaokang
  *
@@ -35,7 +48,8 @@ public class DATE_RANGE_REPORT extends Report
 	protected Date start;
 	protected Date end;
 	protected int farmersTotalWeight;
-
+	private static DecimalFormat df = new DecimalFormat("#.00");
+	
 	/**
 	 * Instead of passing in the daate range, let user click a button to choose
 	 * at first
@@ -66,14 +80,98 @@ public class DATE_RANGE_REPORT extends Report
 	 */
 	public BorderPane Analize() {
 		// TODO Auto-generated method stub
-		BorderPane tmp = new BorderPane();
+		BorderPane pane = new BorderPane();
+
+		ObservableList<Object[]> data = FXCollections
+				.observableArrayList(convert());
+
+		TableColumn<Object[], Integer> id = new TableColumn<Object[], Integer>(
+				"ID");
+		id.setCellValueFactory(
+				new Callback<CellDataFeatures<Object[], Integer>, ObservableValue<Integer>>() {
+					public ObservableValue<Integer> call(
+							CellDataFeatures<Object[], Integer> p) {
+						// p.getValue() returns the Person instance for a
+						// particular TableView row
+						return new ReadOnlyObjectWrapper<>(
+								(Integer) p.getValue()[0]);
+					}
+				});
+
+		TableColumn<Object[], Integer> total = new TableColumn<Object[], Integer>(
+				"Tot_Wei");
+		total.setCellValueFactory(
+				new Callback<CellDataFeatures<Object[], Integer>, ObservableValue<Integer>>() {
+					public ObservableValue<Integer> call(
+							CellDataFeatures<Object[], Integer> p) {
+						// p.getValue() returns the Person instance for a
+						// particular TableView row
+						return new ReadOnlyObjectWrapper<>(
+								(Integer) p.getValue()[1]);
+					}
+				});
+
+		TableColumn<Object[], String> percent = new TableColumn<Object[], String>(
+				"percent(%)");
+		percent.setCellValueFactory(
+				new Callback<CellDataFeatures<Object[], String>, ObservableValue<String>>() {
+					public ObservableValue<String> call(
+							CellDataFeatures<Object[], String> p) {
+						// p.getValue() returns the Person instance for a
+						// particular TableView row
+						return new ReadOnlyObjectWrapper<>(
+								df.format(((Double) p.getValue()[2])));
+					}
+				});
+
+		TableView<Object[]> tableview = new TableView<Object[]>();
+
+		tableview.setItems(data);
+
+		id.setSortable(true);
+		tableview.getColumns().addAll(id, total, percent);
+
+		pane.setLeft(tableview);
+
 		GridPane grid = new GridPane();
+		grid.setHgap(10);
+		grid.setVgap(10);
+		grid.setPadding(new Insets(20, 150, 10, 10));
 
-		grid.add(new Label(start.toString()), 0, 0);
-		grid.add(new Label(end.toString()), 0, 1);
+		Button Filter = new Button("Filter");
+		Filter.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				alert1.display("Still in construction");
+			}
+		});
 
-		tmp.setLeft(grid);
-		return tmp;
+		Button Export = new Button("Export");
+		Export.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				alert1.display("Still in construction");
+			}
+		});
+
+		grid.add(Filter, 0, 0);
+		grid.add(Export, 0, 1);
+
+		pane.setRight(grid);
+
+		alert1.display("This effort will display the annual report for each farmer between "+start.toString()+" and "+end.toString()+
+				"\nRepresentation of each field:"
+				+ "\n  id -- Farmer_id in decending order"
+				+ "\n  tot_weight -- the tital weight for "
+				+ "\n  percent -- weight of this farm/weight of all farmers in this year");
+		
+		
+		return pane;
+	}
+
+	private List<Object[]> convert() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

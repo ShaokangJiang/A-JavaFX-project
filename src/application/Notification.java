@@ -30,6 +30,7 @@ public class Notification {
 		s.setScene(scene);
 
 		s.show();
+		alert1.display("Do you know?", "To sort, you could click the field intended to be able to sort in the assignemnt requirement");
 	}
 	
 

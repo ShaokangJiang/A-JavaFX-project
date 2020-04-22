@@ -60,6 +60,7 @@ public class ImportExportWindow extends Application {
 		buttonM.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
+				path.setText("");
 				List<File> files = fileChooser.showOpenMultipleDialog(s);
 				if (files == null || files.isEmpty()) {
 					return;
@@ -147,7 +148,7 @@ public class ImportExportWindow extends Application {
 		buttonM.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-
+				path.setText("");
 				File file = fileChooser.showSaveDialog(s);
 				if (file == null) {
 					return;
