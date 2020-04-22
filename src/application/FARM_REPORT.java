@@ -10,8 +10,11 @@ import javafx.scene.control.TableView;
 import javafx.scene.layout.BorderPane;
 
 /**
- * Assignment requirement: Prompt user for a farm id and year (or use all
- * available data)
+ * Assignment requirement: 
+ * 
+ * Prompt user for a farm id and year : <id, year> = <Integer, Integer>
+ * 
+ * Choice 2 (or use all available data) <id, year> = <null, null>
  * 
  * Then, display the total milk weight and percent of the total of all farm for
  * each month.
@@ -23,7 +26,7 @@ import javafx.scene.layout.BorderPane;
  *
  */
 public class FARM_REPORT extends Report
-		implements Calculate, Export<FARM_REPORT.FARM> {
+		implements Calculate, Export {
 
 	protected Integer id;
 	protected Integer year;
@@ -38,7 +41,7 @@ public class FARM_REPORT extends Report
 	}
 
 	@Override
-	public DataFrame export(TableView<FARM> a) {
+	public DataFrame export(TableView<Object[]> a) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -49,18 +52,4 @@ public class FARM_REPORT extends Report
 		
 		return new BorderPane();
 	}
-
-	/**
-	 * This class is used to store information that will be represented in table
-	 * view in the
-	 * 
-	 * @author Shaokang Jiang
-	 *
-	 */
-	protected class FARM {
-		protected int id;
-		protected Date day;
-		protected int Num;
-	}
-
 }

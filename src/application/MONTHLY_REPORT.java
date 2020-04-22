@@ -21,7 +21,7 @@ import javafx.scene.layout.BorderPane;
  *
  */
 public class MONTHLY_REPORT extends Report
-		implements Calculate, Export<MONTHLY_REPORT.MONTH> {
+		implements Calculate, Export{
 
 	protected Date askFor;
 	protected int farmersTotalWeight;
@@ -33,7 +33,7 @@ public class MONTHLY_REPORT extends Report
 	}
 
 	@Override
-	public DataFrame export(TableView<MONTH> a) {
+	public DataFrame export(TableView<Object[]> a) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -42,19 +42,6 @@ public class MONTHLY_REPORT extends Report
 	public BorderPane Analize() {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	/**
-	 * This class is used to store information that will be represented in table
-	 * view in the
-	 * 
-	 * @author Shaokang Jiang
-	 *
-	 */
-	protected class MONTH {
-		protected int id;
-		protected Date day;
-		protected int Num;
 	}
 
 }

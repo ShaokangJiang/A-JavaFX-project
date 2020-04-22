@@ -27,7 +27,7 @@ import javafx.scene.layout.GridPane;
  *
  */
 public class DATE_RANGE_REPORT extends Report
-		implements Calculate, Export<DATE_RANGE_REPORT.DATE_RANGE> {
+		implements Calculate, Export {
 
 	protected Date start;
 	protected Date end;
@@ -49,7 +49,7 @@ public class DATE_RANGE_REPORT extends Report
 	}
 
 	@Override
-	public DataFrame export(TableView<DATE_RANGE> a) {
+	public DataFrame export(TableView<Object[]> a) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -71,19 +71,6 @@ public class DATE_RANGE_REPORT extends Report
 
 		tmp.setLeft(grid);
 		return tmp;
-	}
-
-	/**
-	 * This class is used to store information that will be represented in table
-	 * view in the
-	 * 
-	 * @author Shaokang Jiang
-	 *
-	 */
-	protected class DATE_RANGE {
-		protected int id;
-		protected Date day;
-		protected int Num;
 	}
 
 }

@@ -13,7 +13,7 @@ import javafx.scene.control.TableView;
  * @author shaokang
  *
  */
-public class FarmerManager implements Export<Object[]> {
+public class FarmerManager implements Export{
 
 	// Main class will use them, so it is needed to be in protected
 	protected HashMap<Integer, Farmer> Farmers;

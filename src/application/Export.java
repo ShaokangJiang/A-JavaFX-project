@@ -7,7 +7,7 @@ import javafx.scene.control.TableView;
  *
  * @param <S>
  */
-interface Export <S>{
+interface Export{
 
   /**
    * For this method, you need to put the analyze result to a 
@@ -18,6 +18,6 @@ interface Export <S>{
    * @return the dataframe that contains required information in different 
    * cases
    */
-  DataFrame export(TableView<S> a);
+  DataFrame export(TableView<Object[]> a);
   
 }
