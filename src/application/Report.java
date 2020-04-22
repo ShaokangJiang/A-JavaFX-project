@@ -20,10 +20,7 @@ public abstract class Report {
 	 * @param farmers2
 	 */
 	public Report(HashMap<Integer, Farmer> farmers2) {
-		Farmers = new Farmer[farmers2.size()];
-		for (int i = 0; i < Farmers.length; i++) {
-			Farmers[i] = farmers2.get(i);
-		}
+		Farmers = farmers2.values().toArray(new Farmer[0]);
 	}
 
 }

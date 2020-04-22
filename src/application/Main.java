@@ -50,9 +50,6 @@ public class Main extends Application {
 		initialize();
 		BorderPane pane = new BorderPane();
 
-		// ObservableList<Object[]> data
-		// = FXCollections.observableArrayList(Manager.ds.rows);
-
 		ObservableList<Object[]> data = FXCollections.observableArrayList();
 
 		TableColumn<Object[], String> time = new TableColumn<Object[], String>(
