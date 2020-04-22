@@ -175,28 +175,25 @@ public class DATE_RANGE_REPORT extends Report implements Calculate, Export {
 	private List<Object[]> convert() {
 		// TODO Auto-generated method stub
 		List<Object[]> toRe = new ArrayList<Object[]>();
-		HashMap<Date, Integer> totweightByday = new HashMap<Date, Integer>();
+		HashMap<Integer, Integer> totweightByID = new HashMap<Integer, Integer>();
+		Integer total = 0;
 		for (Farmer a : Farmers) {// accumulate
+			int subtotal = 0;
 			for (Entry<Date, Integer> key : a.getWeightByDay().entrySet()) {
+				
 				if (in(key.getKey())) {
-					if (totweightByday.get(key.getKey()) == null) {
-						totweightByday.put(key.getKey(), key.getValue());
-					} else {
-						totweightByday.put(key.getKey(),
-								totweightByday.get(key.getKey())
-										+ key.getValue());
-					}
+					subtotal += key.getValue();
 				}
+			}
+			if(subtotal!=0) {
+				total+=subtotal;
+				totweightByID.put(a.getId(), subtotal);
 			}
 		}
 
-		for (Entry<Date, Integer> key : totweightByday.entrySet()) {
-			for (Farmer a : Farmers) {
-				Integer weight = a.getWeightByDay().get(key.getKey());
-				if(weight != null)
-				toRe.add(new Object[] { a.getId(), weight,
-						(double) weight * 100 / (double) key.getValue() });
-			}
+		for (Entry<Integer, Integer> key : totweightByID.entrySet()) {
+			toRe.add(new Object[] { key.getKey(), key.getValue(),
+						(double) key.getValue() * 100 / (double) total });
 		}
 
 		return toRe;
