@@ -243,6 +243,7 @@ public class ChoiceWindow {
 	private static ComboBox<Integer> ID;
 	private static ComboBox<String> day;
 	private static ComboBox<Integer> year;
+	private static ComboBox<Integer> month;
 	private static int maxWeight;
 
 	private static void showRemoveHint() {
@@ -664,6 +665,87 @@ public class ChoiceWindow {
 		});
 
 		Integer result = dialog.showAndWait().get();
+
+		return result;
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static Integer[] displayAskYearMonth(FarmerManager Manager) {
+
+		if (Manager.ds.rows.size() == 0)
+			alert1.display("No data to choose");
+		// TODO Auto-generated method stub
+		Dialog<Integer[]> dialog = new Dialog<>();
+		dialog.setTitle("Choice window");
+		dialog.setHeaderText("Please choose year:");
+
+		ButtonType OKButton = new ButtonType("Ok", ButtonData.OK_DONE);
+		dialog.getDialogPane().getButtonTypes().addAll(OKButton,
+				ButtonType.CANCEL);
+
+		GridPane grid = new GridPane();
+		grid.setHgap(10);
+		grid.setVgap(10);
+		grid.setPadding(new Insets(20, 150, 10, 10));
+
+		Set<Integer> toUse = new HashSet<Integer>();
+		Set<Integer> toUseMonth = new HashSet<Integer>();
+		for (Date a : Manager.ds.Index.keySet()) {
+			toUse.add(a.getYear() + 1900);
+			toUseMonth.add(a.getMonth()+1);
+		}
+
+		year = new ComboBox<Integer>(FXCollections
+				.observableArrayList(toUse.toArray(new Integer[0])));
+		
+		month = new ComboBox<Integer>(FXCollections
+				.observableArrayList(toUseMonth.toArray(new Integer[0])));
+
+		grid.add(new Label("Year"), 0, 1);
+		grid.add(year, 1, 1);
+		grid.add(new Label("Month"), 0, 2);
+		grid.add(month, 1, 2);
+		// grid.add(button2, 0, 2);
+
+		Node loginButton = dialog.getDialogPane().lookupButton(OKButton);
+		loginButton.setDisable(true);
+
+		year.getSelectionModel().selectedItemProperty()
+				.addListener(new ChangeListener() {
+					@Override
+					public void changed(ObservableValue ov, Object t,
+							Object t1) {
+						if (t1 != null && month.getValue()!= null) {
+							loginButton.setDisable(false);
+						} else {
+							loginButton.setDisable(true);
+						}
+					}
+				});
+		
+		month.getSelectionModel().selectedItemProperty()
+		.addListener(new ChangeListener() {
+			@Override
+			public void changed(ObservableValue ov, Object t,
+					Object t1) {
+				if (t1 != null && year.getValue()!=null) {
+					loginButton.setDisable(false);
+				} else {
+					loginButton.setDisable(true);
+				}
+			}
+		});
+
+		dialog.getDialogPane().setContent(grid);
+
+		dialog.setResultConverter(dialogButton -> {
+			if (dialogButton == OKButton) {
+				return new Integer[] {year.getValue(), month.getValue()};
+			}
+			return null;
+		});
+
+		Integer[] result = dialog.showAndWait().get();
 
 		return result;
 	}

@@ -162,7 +162,7 @@ public class DATE_RANGE_REPORT extends Report implements Calculate, Export {
 		pane.setRight(grid);
 
 		alert1.display(
-				"This effort will display the annual report for each farmer between "
+				"This effort will display the range report for each farmer between "
 						+ start.toString() + " and " + end.toString()
 						+ "\nRepresentation of each field:"
 						+ "\n  id -- Farmer_id in decending order"

@@ -170,6 +170,7 @@ public class Main extends Application {
 					} else {
 						report = Manager.generateFarmReport(null, null);
 					}
+					farm = null;
 
 					if (report == null) {
 						alert1.display("Error happen!", Manager.getError());
@@ -197,7 +198,14 @@ public class Main extends Application {
 					break;
 				case "Monthly Report":
 					// ask for month
-					report = Manager.generateMonthReport(day);
+					try {
+						farm = ChoiceWindow.displayAskYearMonth(Manager);
+					}catch (Exception e) {
+						alert1.display("You didn't choose any range!");
+						return;
+					}
+					report = Manager.generateMonthReport(farm[0],farm[1]);
+					farm = null;
 					if (report == null) {
 						alert1.display("Error hapen!", Manager.getError());
 						show = null;

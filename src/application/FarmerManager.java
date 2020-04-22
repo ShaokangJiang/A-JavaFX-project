@@ -132,12 +132,12 @@ public class FarmerManager implements Export{
 	 * 
 	 * @return a MONTHLY_REPORT class contain current farmers information
 	 */
-	public MONTHLY_REPORT generateMonthReport(Date askFor) {
+	public MONTHLY_REPORT generateMonthReport(int year, int month) {
 		if (ds.rows.isEmpty()) {
 			information = "Should import first.";
 			return null;
 		}
-		return new MONTHLY_REPORT(Farmers, askFor, totalWeight);
+		return new MONTHLY_REPORT(Farmers, year, month, totalWeight);
 	}
 
 	/**
