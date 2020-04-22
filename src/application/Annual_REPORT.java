@@ -148,39 +148,41 @@ public class Annual_REPORT extends Report implements Calculate, Export {
 
 		pane.setRight(grid);
 
-		alert1.display("This effort will display the annual report for each farmer in year"+year+
-				"\nRepresentation of each field:"
-				+ "\n  id -- Farmer_id in decending order"
-				+ "\n  tot_weight -- the tital weight for "
-				+ "\n  percent -- weight of this farm/weight of all farmers in this year");
-		
+		alert1.display(
+				"This effort will display the annual report for each farmer in year"
+						+ year + "\nRepresentation of each field:"
+						+ "\n  id -- Farmer_id in decending order"
+						+ "\n  tot_weight -- the tital weight for "
+						+ "\n  percent -- weight of this farm/weight of all farmers in this year");
+
 		return pane;
 	}
 
 	/**
-	 * id | total weight | percent of total weight 
-	 * Integer | Integer | Double
+	 * id | total weight | percent of total weight Integer | Integer | Double
 	 * 
 	 * @return
 	 */
 	@SuppressWarnings("deprecation")
 	private List<Object[]> convert() {
 		// TODO Auto-generated method stub
-		Date tmp = new Date(18000000);//set it to be 1970-01-01
-		tmp.setYear(year-1900);
+		Date tmp = new Date(18000000);// set it to be 1970-01-01
+		tmp.setYear(year - 1900);
 
 		List<Object[]> toRe = new ArrayList<Object[]>();
 		int tot = 0;
-		for(Farmer a:Farmers) {//accumulate
-			tot += a.getWeightByYear().get(tmp);
+		for (Farmer a : Farmers) {// accumulate
+			if (a.getWeightByYear().get(tmp) != null)
+				tot += a.getWeightByYear().get(tmp);
 		}
-		
-		for(Farmer a:Farmers) {//accumulate
-			int weight = a.getWeightByYear().get(tmp);
-			
-			toRe.add(new Object[] {a.getId(),weight,(double)weight*100/(double)tot});
+
+		for (Farmer a : Farmers) {// accumulate
+			Integer weight = a.getWeightByYear().get(tmp);
+			if (weight != null)
+				toRe.add(new Object[] { a.getId(), weight,
+						(double) weight * 100 / (double) tot });
 		}
-		
+
 		return toRe;
 	}
 }

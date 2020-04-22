@@ -31,22 +31,25 @@ import javafx.util.Callback;
  * The list must be sorted by Farm ID, or you can prompt for ascending or
  * descending by weight.
  * 
+ * 
+ * 
  * @author shaokang
  *
  */
-public class MONTHLY_REPORT extends Report
-		implements Calculate, Export{
+public class MONTHLY_REPORT extends Report implements Calculate, Export {
 
-	protected Integer year;
-	protected Integer month;
+	protected Date askFor;
 	protected int farmersTotalWeight;
 	private static DecimalFormat df = new DecimalFormat("#.00");
-	
-	public MONTHLY_REPORT(HashMap<Integer, Farmer> farmers, Integer year, Integer month, int farmersTotalWeight) {
+
+	public MONTHLY_REPORT(HashMap<Integer, Farmer> farmers, Integer year,
+			Integer month, int farmersTotalWeight) {
 		super(farmers);
 		// TODO Auto-generated constructor stub
-		this.year = year;
-		this.month = month;
+		Date tmp = new Date(18000000);// set it to be 1970-01-01
+		tmp.setYear(year - 1900);
+		tmp.setMonth(month - 1);
+		this.askFor = tmp;
 		this.farmersTotalWeight = farmersTotalWeight;
 	}
 
@@ -141,18 +144,33 @@ public class MONTHLY_REPORT extends Report
 
 		alert1.display(
 				"This effort will display the Monthly report for each farmer in year:"
-						+ year + " and Month" + month
+						+ (askFor.getYear() + 1900) + " and Month"
+						+ (askFor.getMonth() + 1)
 						+ "\nRepresentation of each field:"
 						+ "\n  id -- Farmer_id in decending order"
 						+ "\n  tot_weight -- the total weight for a farmer on a day in range"
 						+ "\n  percent -- weight of this farm/weight of all farmers in this day in range");
 
-		return null;
+		return pane;
 	}
 
 	private List<Object[]> convert() {
 		// TODO Auto-generated method stub
-		return null;
+		List<Object[]> toRe = new ArrayList<Object[]>();
+		int tot = 0;
+		for (Farmer a : Farmers) {// accumulate
+			if (a.getWeightByMonth().get(askFor) != null)
+				tot += a.getWeightByMonth().get(askFor);
+		}
+
+		for (Farmer a : Farmers) {// accumulate
+			Integer weight = a.getWeightByMonth().get(askFor);
+			if (weight != null)
+				toRe.add(new Object[] { a.getId(), weight,
+						(double) weight * 100 / (double) tot });
+		}
+
+		return toRe;
 	}
 
 }
