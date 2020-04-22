@@ -112,7 +112,8 @@ public class Main extends Application {
 				if (tmp != null) {
 					try {
 						if (!Manager.importData(tmp)) {
-							alert1.display("Please import valid data:",Manager.getError());
+							alert1.display("Please import valid data:",
+									Manager.getError());
 						}
 						ObservableList<Object[]> data = FXCollections
 								.observableArrayList(
@@ -148,98 +149,104 @@ public class Main extends Application {
 		generate_report.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				final String[] tmp = new String[] { "Farm report",
-						"Range Report", "Monthly Report", "Annual Report" };
-				BorderPane show;
-				Date[] pass;
-				Report report;
-				Date day = null;
-				Integer[] farm;
-				switch (selectFun(tmp)) {
-				case "Farm report":
-					// ask for id and year
-					try {
-						farm = ChoiceWindow.displayAskIdYear(Manager.Farmers
-								.keySet().toArray(new Integer[0]), Manager);
-					} catch (Exception e) {
-						alert1.display("You didn't choose any option!");
-						return;
-					}
-					if (farm[0] != null) {
-						report = Manager.generateFarmReport(farm[0], farm[1]);
-					} else {
-						report = Manager.generateFarmReport(null, null);
-					}
-					farm = null;
+				try {
+					final String[] tmp = new String[] { "Farm report",
+							"Range Report", "Monthly Report", "Annual Report" };
+					BorderPane show;
+					Date[] pass;
+					Report report;
+					Date day = null;
+					Integer[] farm;
+					switch (selectFun(tmp)) {
+					case "Farm report":
+						// ask for id and year
+						try {
+							farm = ChoiceWindow.displayAskIdYear(Manager.Farmers
+									.keySet().toArray(new Integer[0]), Manager);
+						} catch (Exception e) {
+							alert1.display("You didn't choose any option!");
+							return;
+						}
+						if (farm[0] != null) {
+							report = Manager.generateFarmReport(farm[0],
+									farm[1]);
+						} else {
+							report = Manager.generateFarmReport(null, null);
+						}
+						farm = null;
 
-					if (report == null) {
-						alert1.display("Error happen!", Manager.getError());
-						show = null;
-						return;
-					} else
-						show = ((FARM_REPORT) report).Analize();
+						if (report == null) {
+							alert1.display("Error happen!", Manager.getError());
+							show = null;
+							return;
+						} else
+							show = ((FARM_REPORT) report).Analize();
 
-					break;
-				case "Range Report":
-					pass = null;
-					try {
-						pass = ChoiceWindow.displayDateRange();
-					} catch (Exception e) {
-						alert1.display("You didn't choose any range!");
+						break;
+					case "Range Report":
+						pass = null;
+						try {
+							pass = ChoiceWindow.displayDateRange();
+						} catch (Exception e) {
+							alert1.display("You didn't choose any range!");
+							return;
+						}
+						report = Manager.generateDateRangeReport(pass[0],
+								pass[1]);
+						if (report == null) {
+							alert1.display("Error hapen!", Manager.getError());
+							show = null;
+							return;
+						} else
+							show = ((DATE_RANGE_REPORT) report).Analize();
+						break;
+					case "Monthly Report":
+						// ask for month
+						try {
+							farm = ChoiceWindow.displayAskYearMonth(Manager);
+						} catch (Exception e) {
+							alert1.display("You didn't choose any range!");
+							return;
+						}
+						report = Manager.generateMonthReport(farm[0], farm[1]);
+						farm = null;
+						if (report == null) {
+							alert1.display("Error hapen!", Manager.getError());
+							show = null;
+							return;
+						} else
+							show = ((MONTHLY_REPORT) report).Analize();
+						break;
+					case "Annual Report":
+						// ask for year
+						Integer year = 0;
+						try {
+							year = ChoiceWindow.displayAskYear(Manager);
+						} catch (Exception e) {
+							alert1.display("You didn't choose any data!");
+							return;
+						}
+						if (year == null)
+							return;
+						// System.out.println(year);
+						report = Manager.generateAnnualReport(year);
+						if (report == null) {
+							alert1.display("Error hapen!", Manager.getError());
+							show = null;
+							return;
+						} else
+							show = ((Annual_REPORT) report).Analize();
+						break;
+					default:
+						alert1.display("Incorrecct choice");
 						return;
 					}
-					report = Manager.generateDateRangeReport(pass[0], pass[1]);
-					if (report == null) {
-						alert1.display("Error hapen!", Manager.getError());
-						show = null;
-						return;
-					} else
-						show = ((DATE_RANGE_REPORT) report).Analize();
-					break;
-				case "Monthly Report":
-					// ask for month
-					try {
-						farm = ChoiceWindow.displayAskYearMonth(Manager);
-					}catch (Exception e) {
-						alert1.display("You didn't choose any range!");
-						return;
-					}
-					report = Manager.generateMonthReport(farm[0],farm[1]);
-					farm = null;
-					if (report == null) {
-						alert1.display("Error hapen!", Manager.getError());
-						show = null;
-						return;
-					} else
-						show = ((MONTHLY_REPORT) report).Analize();
-					break;
-				case "Annual Report":
-					// ask for year
-					Integer year = 0;
-					try {
-						year = ChoiceWindow.displayAskYear(Manager);
-					} catch (Exception e) {
-						alert1.display("You didn't choose any data!");
-						return;
-					}
-					if (year == null)
-						return;
-					//System.out.println(year);
-					report = Manager.generateAnnualReport(year);
-					if (report == null) {
-						alert1.display("Error hapen!", Manager.getError());
-						show = null;
-						return;
-					} else
-						show = ((Annual_REPORT) report).Analize();
-					break;
-				default:
-					alert1.display("Incorrecct choice");
+
+					Notification.display(show);
+				} catch (Exception e) {
+					alert1.display("You didn't choose any data!");
 					return;
 				}
-
-				Notification.display(show);
-
 			}
 		});
 
@@ -275,66 +282,76 @@ public class Main extends Application {
 						"Reduce weight on a day", "Remove weight on a day" };
 				ObservableList<Object[]> data;
 				Object[] pass;
-				switch (selectFun(tmp)) {
-				case "Remove Farmer":
-					Integer id = null;
-					try {
-						id = ChoiceWindow.displayRemoveFarmer(Manager.Farmers
-								.keySet().toArray(new Integer[0]), Manager);
-					} catch (Exception e) {
-						alert1.display("You didn't choose any data!");
-						return;
-					}
-					if (!Manager.removeData(id)) {
-						alert1.display("Error happen", Manager.getError());
-					} else {
-						alert1.display("Data reduced successfully");
-					}
-					data = FXCollections.observableArrayList(
-							exceptNullRow(Manager.ds.rows));
-					tableview.setItems(data);
-					break;
-				case "Reduce weight on a day":
-					pass = null;
-					try {
-						pass = ChoiceWindow.displayReduceFarmer(Manager.Farmers
-								.keySet().toArray(new Integer[0]), Manager);
-					} catch (Exception e) {
-						alert1.display("You didn't choose any data!");
-						return;
-					}
-					if (!Manager.removeData((Integer) pass[1],
-							(Integer) pass[2], (String) pass[0])) {
-						alert1.display("Error happen", Manager.getError());
-					} else {
-						alert1.display("Data reduced successfully");
-					}
-					data = FXCollections.observableArrayList(
-							exceptNullRow(Manager.ds.rows));
-					tableview.setItems(data);
-					break;
-				case "Remove weight on a day":
-					pass = null;
-					try {
-						pass = ChoiceWindow
-								.displayRemoveFarmerDay(Manager.Farmers.keySet()
-										.toArray(new Integer[0]), Manager);
-					} catch (Exception e) {
-						alert1.display("You didn't choose any data!");
-						return;
-					}
-					if (!Manager.removeData((Integer) pass[1],
-							(String) pass[0])) {
-						alert1.display("Error happen", Manager.getError());
-					} else {
-						alert1.display("Data reduced successfully");
-					}
-					data = FXCollections.observableArrayList(
-							exceptNullRow(Manager.ds.rows));
-					tableview.setItems(data);
+				try {
+					switch (selectFun(tmp)) {
+					case "Remove Farmer":
+						Integer id = null;
+						try {
+							id = ChoiceWindow.displayRemoveFarmer(
+									Manager.Farmers.keySet()
+											.toArray(new Integer[0]),
+									Manager);
+						} catch (Exception e) {
+							alert1.display("You didn't choose any data!");
+							return;
+						}
+						if (!Manager.removeData(id)) {
+							alert1.display("Error happen", Manager.getError());
+						} else {
+							alert1.display("Data reduced successfully");
+						}
+						data = FXCollections.observableArrayList(
+								exceptNullRow(Manager.ds.rows));
+						tableview.setItems(data);
+						break;
+					case "Reduce weight on a day":
+						pass = null;
+						try {
+							pass = ChoiceWindow.displayReduceFarmer(
+									Manager.Farmers.keySet()
+											.toArray(new Integer[0]),
+									Manager);
+						} catch (Exception e) {
+							alert1.display("You didn't choose any data!");
+							return;
+						}
+						if (!Manager.removeData((Integer) pass[1],
+								(Integer) pass[2], (String) pass[0])) {
+							alert1.display("Error happen", Manager.getError());
+						} else {
+							alert1.display("Data reduced successfully");
+						}
+						data = FXCollections.observableArrayList(
+								exceptNullRow(Manager.ds.rows));
+						tableview.setItems(data);
+						break;
+					case "Remove weight on a day":
+						pass = null;
+						try {
+							pass = ChoiceWindow.displayRemoveFarmerDay(
+									Manager.Farmers.keySet()
+											.toArray(new Integer[0]),
+									Manager);
+						} catch (Exception e) {
+							alert1.display("You didn't choose any data!");
+							return;
+						}
+						if (!Manager.removeData((Integer) pass[1],
+								(String) pass[0])) {
+							alert1.display("Error happen", Manager.getError());
+						} else {
+							alert1.display("Data reduced successfully");
+						}
+						data = FXCollections.observableArrayList(
+								exceptNullRow(Manager.ds.rows));
+						tableview.setItems(data);
 
-					break;
-				default:
+						break;
+					default:
+						return;
+					}
+				} catch (Exception e) {
+					alert1.display("You didn't choose any data!");
 					return;
 				}
 
