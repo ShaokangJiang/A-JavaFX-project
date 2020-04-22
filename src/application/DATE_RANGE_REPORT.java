@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -19,6 +20,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn.CellDataFeatures;
+import javafx.scene.control.TableColumn.SortType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.util.Callback;
@@ -42,14 +44,13 @@ import javafx.util.Callback;
  * @author shaokang
  *
  */
-public class DATE_RANGE_REPORT extends Report
-		implements Calculate, Export {
+public class DATE_RANGE_REPORT extends Report implements Calculate, Export {
 
 	protected Date start;
 	protected Date end;
 	protected int farmersTotalWeight;
 	private static DecimalFormat df = new DecimalFormat("#.00");
-	
+
 	/**
 	 * Instead of passing in the daate range, let user click a button to choose
 	 * at first
@@ -129,6 +130,7 @@ public class DATE_RANGE_REPORT extends Report
 		tableview.setItems(data);
 
 		id.setSortable(true);
+		id.setSortType(SortType.DESCENDING);
 		tableview.getColumns().addAll(id, total, percent);
 
 		pane.setLeft(tableview);
@@ -159,19 +161,51 @@ public class DATE_RANGE_REPORT extends Report
 
 		pane.setRight(grid);
 
-		alert1.display("This effort will display the annual report for each farmer between "+start.toString()+" and "+end.toString()+
-				"\nRepresentation of each field:"
-				+ "\n  id -- Farmer_id in decending order"
-				+ "\n  tot_weight -- the tital weight for "
-				+ "\n  percent -- weight of this farm/weight of all farmers in this year");
-		
-		
+		alert1.display(
+				"This effort will display the annual report for each farmer between "
+						+ start.toString() + " and " + end.toString()
+						+ "\nRepresentation of each field:"
+						+ "\n  id -- Farmer_id in decending order"
+						+ "\n  tot_weight -- the total weight for a farmer on a day in range"
+						+ "\n  percent -- weight of this farm/weight of all farmers in this day in range");
+
 		return pane;
 	}
 
 	private List<Object[]> convert() {
 		// TODO Auto-generated method stub
-		return null;
+		List<Object[]> toRe = new ArrayList<Object[]>();
+		HashMap<Date, Integer> totweightByday = new HashMap<Date, Integer>();
+		for (Farmer a : Farmers) {// accumulate
+			for (Entry<Date, Integer> key : a.getWeightByDay().entrySet()) {
+				if (in(key.getKey())) {
+					if (totweightByday.get(key.getKey()) == null) {
+						totweightByday.put(key.getKey(), key.getValue());
+					} else {
+						totweightByday.put(key.getKey(),
+								totweightByday.get(key.getKey())
+										+ key.getValue());
+					}
+				}
+			}
+		}
+
+		for (Entry<Date, Integer> key : totweightByday.entrySet()) {
+			for (Farmer a : Farmers) {
+				Integer weight = a.getWeightByDay().get(key.getKey());
+				if(weight != null)
+				toRe.add(new Object[] { a.getId(), weight,
+						(double) weight * 100 / (double) key.getValue() });
+			}
+		}
+
+		return toRe;
+	}
+
+	private Boolean in(Date current) {
+		if (current.compareTo(start) > 0 && current.compareTo(end) < 0)
+			return true;
+		return false;
 	}
 
 }
