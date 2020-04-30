@@ -30,7 +30,7 @@ import javafx.stage.Stage;
  * @author shaokang
  *
  */
-public class ImportExportWindow extends Application {
+public class ImportExportWindow  {
 
 	static protected FileChooser fileChooser;
 	//static protected String path1 = System.getProperty("user.home");
@@ -121,7 +121,7 @@ public class ImportExportWindow extends Application {
 	 * Show this import window
 	 * 
 	 * 
-	 * @param i int to indicate this is in import model or export model
+	 * @param i intot  indicate this is in import model or export model
 	 */
 	public static Boolean DisplayExport(Stage s, DataFrame k) {
 		// TODO Auto-generated method stub
@@ -238,11 +238,11 @@ public class ImportExportWindow extends Application {
 		return CSVFileReader.readCSV(tmp);
 	}
 
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		launch();
-	}
+	}*/
 
-	@Override
+	/*@Override
 	public void start(Stage primaryStage) throws Exception {
 		// TODO Auto-generated method stub
 
@@ -276,6 +276,6 @@ public class ImportExportWindow extends Application {
 
 		primaryStage.show();
 
-	}
+	}*/
 
 }

@@ -16,9 +16,10 @@ public class DataFrame {
 
 	// some sample private data field. You may change them.
 	// All of them should be in private access
-	private String[] column;
+	protected String[] column;
 	protected List<Object[]> rows;
-	private Object[] dataType;
+	protected Object[] dataType;
+	public int colNum;
 
 	/**
 	 * Create a new DataFrame with a given list of columns. column could be
@@ -52,6 +53,8 @@ public class DataFrame {
 		this.column = column;
 		this.dataType = dataType;
 		rows = new ArrayList<Object[]>();
+		colNum= column.length;
+		
 	}
 
 	protected boolean checkData(Object[] row) {
