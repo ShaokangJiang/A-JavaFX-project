@@ -3,6 +3,7 @@ package application;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -231,11 +232,12 @@ public class ImportExportWindow  {
 	public static DataFrameIndex Import(String path)
 			throws FileNotFoundException, RuntimeException {
 		String[] toRead = path.split(";");
-		File[] tmp = new File[toRead.length];
+		List<File> tmp = new ArrayList<File>();
 		for (int i = 0; i < toRead.length; i++) {
-			tmp[i] = new File(toRead[i]);
+			if(!toRead[i].trim().isEmpty())
+			tmp.add(new File(toRead[i]));
 		}
-		return CSVFileReader.readCSV(tmp);
+		return CSVFileReader.readCSV(tmp.toArray(new File[0]));
 	}
 
 	/*public static void main(String[] args) {

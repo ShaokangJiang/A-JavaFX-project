@@ -41,11 +41,14 @@ public class Main extends Application {
 	/**
 	 * This method should actually handle argument
 	 */
-	private void initialize(List<String> args) {
+	private void initialize() {
 		// TODO Auto-generated method stub
+		
 		Manager = new FarmerManager();
-		if (args.size() == 0)
+		String[] args = argument;
+		if (args.length == 0) {
 			return;
+		}
 		DataFrameIndex tmp = null;
 		if (!initialAnalize(args)) {
 			System.out.print(
@@ -58,10 +61,15 @@ public class Main extends Application {
 		} else {
 			System.out.println("Data will be imported and GUI will start...");
 
-			switch (args.get(0)) {
+			switch (args[0]) {
 			case "-d":
 				try {
-					tmp = ImportExportWindow.Import(args.get(0));
+					List<String> a = readFile(args[0]);
+					StringBuilder fileList = new StringBuilder();
+					for(String tmp1 : a) {
+						fileList.append(tmp1+";");
+					}
+					tmp = ImportExportWindow.Import(fileList.toString());
 				} catch (Exception as) {
 					System.out.println("Error happen: " + as.getMessage()
 							+ "\nYou will enter command line mode as it seems you want to use command line");
@@ -74,6 +82,8 @@ public class Main extends Application {
 						if (!Manager.importData(tmp)) {
 							alert1.display("Please import valid data:",
 									Manager.getError());
+						}else {
+							System.out.println("Successfully imported");
 						}
 					} catch (Exception e) {
 						System.out.println(
@@ -85,7 +95,7 @@ public class Main extends Application {
 				break;
 			default:
 				try {
-					tmp = ImportExportWindow.Import(args.get(0));
+					tmp = ImportExportWindow.Import(args[0]);
 				} catch (Exception as) {
 					System.out.println("Error happen: " + as.getMessage()
 							+ "\nPlease redo with valid path");
@@ -96,6 +106,8 @@ public class Main extends Application {
 						if (!Manager.importData(tmp)) {
 							alert1.display("Please import valid data:",
 									Manager.getError());
+						}else {
+							System.out.println("Successfully imported");
 						}
 					} catch (Exception e) {
 						System.out.println(
@@ -112,20 +124,48 @@ public class Main extends Application {
 	private void commandPrompt(DataFrameIndex tmp) {
 		Scanner scnr = new Scanner(System.in);
 		String[] command;
+		
 		while (true) {
+			System.out.print("> ");
 			command = scnr.nextLine().split(" ");
-			if (command.length == 1 || command.length == 0)
+			if (command.length == 0)
 				continue;
-			switch (command[1]) {
+			switch (command[0]) {
 			case "-h":
 				System.out.print(commandHelp());
 				break;
 			case "-d":
-
+				try {
+					List<String> a = readFile(command[1]);
+					StringBuilder fileList = new StringBuilder();
+					for(String tmp1 : a) {
+						fileList.append(tmp1+";");
+					}
+					tmp = ImportExportWindow.Import(fileList.toString());
+				} catch (Exception as) {
+					System.out.println("Error happen: " + as.getMessage()
+							+ "\n Please redo");
+					break;
+				}
+				if (tmp != null) {
+					try {
+						if (!Manager.importData(tmp)) {
+							alert1.display("Please import valid data:",
+									Manager.getError());
+						}else {
+							System.out.println("Successfully imported");
+						}
+					} catch (Exception e) {
+						System.out.println(
+								"Unknow event happen, program will close: "
+										+ e.getMessage());
+						System.exit(1);
+					}
+				}
 				break;
 			case "-f":
 				try {
-					tmp = ImportExportWindow.Import(command[2]);
+					tmp = ImportExportWindow.Import(command[1]);
 				} catch (Exception as) {
 					System.out.println("Error happen: " + as.getMessage()
 							+ "\nPlease redo with valid path");
@@ -136,6 +176,8 @@ public class Main extends Application {
 						if (!Manager.importData(tmp)) {
 							alert1.display("Please import valid data:",
 									Manager.getError());
+						}else {
+							System.out.println("Successfully imported");
 						}
 					} catch (Exception e) {
 						System.out.println(
@@ -146,12 +188,13 @@ public class Main extends Application {
 				}
 				break;
 			case "-g":
+				System.out.println("GUI will start...");
+				scnr.close();
 				return;
 			default:
 				System.out.print(commandHelp());
 				break;
 			}
-
 		}
 	}
 
@@ -162,22 +205,21 @@ public class Main extends Application {
 		for (File file : filesList) {
 			if (file.isFile()) {
 				if (file.getName().trim().endsWith(".csv"))
-					files.add(file.getName());
+					files.add(file.getAbsolutePath());
 			}
 		}
 		return files;
 	}
 
-	private boolean initialAnalize(List<String> args) {
-		return (args.get(0) != null && args.get(0).equals("-d")
-				&& args.get(1) != null)
-				|| (args.get(0) != null && args.get(0).contains(".csv"));
+	private boolean initialAnalize(String[] args) {
+		return (args.length == 2 && args[0].equals("-d"))
+				|| (args.length == 1 && args[0].contains(".csv"));
 	}
 
 	@Override
 	public void start(Stage s) throws Exception {
 		// TODO Auto-generated method stub
-		initialize(this.getParameters().getRaw());
+		initialize();
 		BorderPane pane = new BorderPane();
 
 		ObservableList<Object[]> data = FXCollections
@@ -552,8 +594,8 @@ public class Main extends Application {
 	// use when user start using command line
 	private static String commandHelp() {
 		return "Usage: "
-				+ "\t -f <\"path/to/file\"> -- This file will be imported. Should be csv files. Seperate using ; if there are multiple files\n"
-				+ "\t -d <\"path/to/file\"> -- This will import any csv file in the directory, if any of them contain incorrect formatted data, no data will be imported \n"
+				+ "\t -f \"path/to/file\" -- This file will be imported. Should be csv files. Seperate using ; if there are multiple files\n"
+				+ "\t -d \"path/to/file\" -- This will import any csv file in the directory, if any of them contain incorrect formatted data, no data will be imported \n"
 				+ "\t -h -- print help message \n" + "\t -g -- start GUI \n";
 	}
 }
