@@ -995,13 +995,13 @@ public class ChoiceWindow {
 		return result;
 	}
 
-	final private static boolean in(int a, int min, int max) {
+	final protected static boolean in(int a, int min, int max) {
 		if (a >= min && a <= max)
 			return true;
 		return false;
 	}
 
-	final private static boolean in(double a, double min, double max) {
+	final protected static boolean in(double a, double min, double max) {
 		if (a >= min && a <= max)
 			return true;
 		return false;

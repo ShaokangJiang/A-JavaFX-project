@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleStringProperty;
@@ -139,8 +140,18 @@ public class Annual_REPORT extends Report implements Calculate, Export {
 			@Override
 			public void handle(ActionEvent event) {
 				Object[] tmp = ChoiceWindow.displayRange(tableview);
-				
-				alert1.display("Still in construction");
+				List<Object[]> toShow = tableview.getItems().stream()
+						.filter(o -> ChoiceWindow.in((Integer) o[0],
+								(Integer) tmp[0], (Integer) tmp[1])
+								&& ChoiceWindow.in((Integer) o[1],
+										(Integer) tmp[2], (Integer) tmp[3])
+								&& ChoiceWindow.in(
+										Double.parseDouble((String) o[2]),
+										(Double) tmp[4], (Double) tmp[5]))
+						.collect(Collectors.toList());
+				ObservableList<Object[]> data = FXCollections
+						.observableArrayList(toShow);
+				tableview.setItems(data);
 			}
 		});
 
@@ -194,5 +205,5 @@ public class Annual_REPORT extends Report implements Calculate, Export {
 
 		return toRe;
 	}
-	
+
 }
