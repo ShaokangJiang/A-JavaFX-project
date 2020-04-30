@@ -1,8 +1,10 @@
 package application;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
 
 import javafx.application.Application;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -39,18 +41,147 @@ public class Main extends Application {
 	/**
 	 * This method should actually handle argument
 	 */
-	private void initialize() {
+	private void initialize(List<String> args) {
 		// TODO Auto-generated method stub
 		Manager = new FarmerManager();
+		if (args.size() == 0)
+			return;
+		DataFrameIndex tmp = null;
+		if (!initialAnalize(args)) {
+			System.out.print(
+					"Welcome to command mode of this program. Because of the requirement of this assignment,"
+							+ "\n majority effort should be done in GUI. This part is only for command line import function. \n"
+							+ commandHelp());
+			
+			commandPrompt(tmp);
+			return;
+		} else {
+			System.out.println("Data will be imported and GUI will start...");
+
+			switch (args.get(0)) {
+			case "-d":
+				try {
+					tmp = ImportExportWindow.Import(args.get(0));
+				} catch (Exception as) {
+					System.out.println("Error happen: " + as.getMessage()
+							+ "\nYou will enter command line mode as it seems you want to use command line");
+					tmp = null; 
+					commandPrompt(tmp);
+					return;
+				}
+				if (tmp != null) {
+					try {
+						if (!Manager.importData(tmp)) {
+							alert1.display("Please import valid data:",
+									Manager.getError());
+						}
+					} catch (Exception e) {
+						System.out.println(
+								"Unknow event happen, program will close: "
+										+ e.getMessage());
+						System.exit(1);
+					}
+				}
+				break;
+			default:
+				try {
+					tmp = ImportExportWindow.Import(args.get(0));
+				} catch (Exception as) {
+					System.out.println("Error happen: " + as.getMessage()
+							+ "\nPlease redo with valid path");
+					break;
+				}
+				if (tmp != null) {
+					try {
+						if (!Manager.importData(tmp)) {
+							alert1.display("Please import valid data:",
+									Manager.getError());
+						}
+					} catch (Exception e) {
+						System.out.println(
+								"Unknow event happen, program will close: "
+										+ e.getMessage());
+						System.exit(1);
+					}
+				}
+				break;
+			}
+		}
+	}
+	
+	private void commandPrompt(DataFrameIndex tmp) {
+		Scanner scnr = new Scanner(System.in);
+		String[] command;
+		while (true) {
+			command = scnr.nextLine().split(" ");
+			if (command.length == 1 || command.length == 0)
+				continue;
+			switch (command[1]) {
+			case "-h":
+				System.out.print(commandHelp());
+				break;
+			case "-d":
+
+				break;
+			case "-f":
+				try {
+					tmp = ImportExportWindow.Import(command[2]);
+				} catch (Exception as) {
+					System.out.println("Error happen: " + as.getMessage()
+							+ "\nPlease redo with valid path");
+					break;
+				}
+				if (tmp != null) {
+					try {
+						if (!Manager.importData(tmp)) {
+							alert1.display("Please import valid data:",
+									Manager.getError());
+						}
+					} catch (Exception e) {
+						System.out.println(
+								"Unknow event happen, program will close: "
+										+ e.getMessage());
+						System.exit(1);
+					}
+				}
+				break;
+			case "-g":
+				return;
+			default:
+				System.out.print(commandHelp());
+				break;
+			}
+
+		}
+	}
+
+	private static ArrayList<String> readFile(String path) {
+		File dir = new File(path);
+		ArrayList<String> files = new ArrayList<String>();
+		File[] filesList = dir.listFiles();
+		for (File file : filesList) {
+			if (file.isFile()) {
+				if (file.getName().trim().endsWith(".csv"))
+					files.add(file.getName());
+			}
+		}
+		return files;
+	}
+
+	private boolean initialAnalize(List<String> args) {
+		return (args.get(0) != null && args.get(0).equals("-d")
+				&& args.get(1) != null)
+				|| (args.get(0) != null && args.get(0).contains(".csv"));
 	}
 
 	@Override
 	public void start(Stage s) throws Exception {
 		// TODO Auto-generated method stub
-		initialize();
+		initialize(this.getParameters().getRaw());
 		BorderPane pane = new BorderPane();
 
-		ObservableList<Object[]> data = FXCollections.observableArrayList();
+		ObservableList<Object[]> data = FXCollections
+				.observableArrayList(exceptNullRow(Manager.ds.rows));
 
 		TableColumn<Object[], String> time = new TableColumn<Object[], String>(
 				"Time");
@@ -245,7 +376,7 @@ public class Main extends Application {
 					Notification.display(show);
 				} catch (Exception e) {
 					alert1.display("You didn't choose any data!");
-					//e.printStackTrace();
+					// e.printStackTrace();
 					return;
 				}
 			}
@@ -420,6 +551,9 @@ public class Main extends Application {
 
 	// use when user start using command line
 	private static String commandHelp() {
-		return "";
+		return "Usage: "
+				+ "\t -f <\"path/to/file\"> -- This file will be imported. Should be csv files. Seperate using ; if there are multiple files\n"
+				+ "\t -d <\"path/to/file\"> -- This will import any csv file in the directory, if any of them contain incorrect formatted data, no data will be imported \n"
+				+ "\t -h -- print help message \n" + "\t -g -- start GUI \n";
 	}
 }
