@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -22,6 +24,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
@@ -748,6 +751,260 @@ public class ChoiceWindow {
 		Integer[] result = dialog.showAndWait().get();
 
 		return result;
+	}
+	
+
+	private static int minID;
+	private static int maxID;
+	private static int minWeight;
+	private static double minPer;
+	private static double maxPer;
+	private static Matcher m;
+	private static Pattern match = Pattern.compile("(\\d+.\\d+)");
+
+	/**
+	 * return format: [IDmin, IDMax, WeightMin, WeightMax, PercentMin,
+	 * PercentMax]
+	 * 
+	 * @param a
+	 * @return
+	 */
+	public static Object[] displayRange(TableView<Object[]> a) {
+
+		if (a.getItems().size() == 0)
+			return null;
+
+		minID = (int) a.getItems().get(0)[0];
+		maxID = (int) a.getItems().get(0)[0];
+		minWeight = (int) a.getItems().get(0)[1];
+		maxWeight = (int) a.getItems().get(0)[1];
+		minPer = Double.parseDouble((String) a.getItems().get(0)[2]);
+		maxPer = Double.parseDouble((String) a.getItems().get(0)[2]);
+
+		for (Object[] tmp : a.getItems()) {
+			if ((int) tmp[0] < minID)
+				minID = (int) tmp[0];
+			else if ((int) tmp[0] > maxID)
+				maxID = (int) tmp[0];
+
+			if ((int) tmp[1] < minWeight)
+				minWeight = (int) tmp[1];
+			else if ((int) tmp[1] > maxWeight)
+				maxWeight = (int) tmp[1];
+
+			double tmpPer = Double.parseDouble((String) tmp[2]);
+			if (tmpPer < minPer)
+				minPer = tmpPer;
+			else if (tmpPer > maxPer)
+				maxPer = tmpPer;
+
+		}
+
+		Dialog<Object[]> dialog = new Dialog<>();
+		dialog.setTitle("Choice window");
+		dialog.setHeaderText("Please setup range you want: ");
+
+		boolean chosen = false;
+
+		ButtonType OKButton = new ButtonType("Ok", ButtonData.OK_DONE);
+		dialog.getDialogPane().getButtonTypes().addAll(OKButton,
+				ButtonType.CANCEL);
+
+		BorderPane pane = new BorderPane();
+		Label tmp = new Label(
+				"Input range: Empty field will be replaced with default value");
+		pane.setTop(tmp);
+
+		GridPane grid = new GridPane();
+		grid.setHgap(10);
+		grid.setVgap(10);
+		grid.setPadding(new Insets(20, 150, 10, 10));
+
+		TextField IDMin = new TextField("" + minID);
+		IDMin.setPromptText("Min ID");
+		TextField IDMax = new TextField("" + maxID);
+		IDMax.setPromptText("Max ID");
+		TextField weightMin = new TextField("" + minWeight);
+		weightMin.setPromptText("Min Weight");
+		TextField weightMax = new TextField("" + maxWeight);
+		weightMax.setPromptText("Max Weight");
+		TextField percentageMin = new TextField("" + minPer);
+		percentageMin.setPromptText("Min Percent");
+		TextField percentageMax = new TextField("" + maxPer);
+		percentageMax.setPromptText("Max Percent");
+
+		grid.add(new Label("ID range: "), 0, 0);
+		grid.add(IDMin, 1, 0);
+		grid.add(new Label(" to "), 2, 0);
+		grid.add(IDMax, 3, 0);
+		grid.add(
+				new Label("(Please enter Integer " + minID + "~" + maxID + ")"),
+				4, 0);
+
+		grid.add(new Label("Weight range: "), 0, 1);
+		grid.add(weightMin, 1, 1);
+		grid.add(new Label(" to "), 2, 1);
+		grid.add(weightMax, 3, 1);
+		grid.add(new Label(
+				"(Please enter Integer " + minWeight + "~" + maxWeight + ")"),
+				4, 1);
+
+		grid.add(new Label("Percent range: "), 0, 2);
+		grid.add(percentageMin, 1, 2);
+		grid.add(new Label(" to "), 2, 2);
+		grid.add(percentageMax, 3, 2);
+		grid.add(
+				new Label(
+						"(Please enter Percent " + minPer + "~" + maxPer + ")"),
+				4, 2);
+
+		IDMin.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (!newValue.matches("\\d*")) {
+				IDMin.setText(newValue.replaceAll("[^\\d]", ""));
+			}
+			if (!IDMin.getText().isEmpty()) {
+				if (!in(Integer.parseInt(IDMin.getText()), minID,
+						Integer.parseInt(IDMax.getText()))) {
+					IDMin.setText("" + minID);
+					tmp.setText("IDmin can not be lower than " + minID);
+				}
+			}
+		});
+
+		IDMax.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (!newValue.matches("\\d*")) {
+				IDMax.setText(newValue.replaceAll("[^\\d]", ""));
+			}
+			if (!IDMax.getText().isEmpty()) {
+				if (!in(Integer.parseInt(IDMax.getText()),
+						Integer.parseInt(IDMin.getText()), maxID)) {
+					IDMax.setText("" + maxID);
+					tmp.setText("IDmax can not be more than " + maxID);
+				}
+			}
+		});
+
+		weightMin.textProperty()
+				.addListener((observable, oldValue, newValue) -> {
+					if (!newValue.matches("\\d*")) {
+						weightMin.setText(newValue.replaceAll("[^\\d]", ""));
+					}
+					if (!weightMin.getText().isEmpty()) {
+						if (!in(Integer.parseInt(weightMin.getText()),
+								minWeight,
+								Integer.parseInt(weightMax.getText()))) {
+							weightMin.setText("" + minWeight);
+							tmp.setText("weightMin can not be lower than "
+									+ minWeight);
+						}
+					}
+				});
+
+		weightMax.textProperty()
+				.addListener((observable, oldValue, newValue) -> {
+					if (!newValue.matches("\\d*")) {
+						weightMax.setText(newValue.replaceAll("[^\\d]", ""));
+					}
+					if (!weightMax.getText().isEmpty()) {
+						if (!in(Integer.parseInt(weightMax.getText()),
+								Integer.parseInt(weightMin.getText()),
+								maxWeight)) {
+							weightMax.setText("" + maxWeight);
+							tmp.setText("weightMax can not be more than "
+									+ maxWeight);
+						}
+					}
+				});
+
+		percentageMin.textProperty()
+				.addListener((observable, oldValue, newValue) -> {
+					if (!newValue.matches("(\\d+.\\d+)")) {
+						m = match.matcher(newValue);
+						if (m.find()) {
+							percentageMin.setText(m.group());
+						} else {
+							percentageMin.setText("");
+						}
+					}
+					if (!percentageMin.getText().isEmpty()) {
+						if (!in(Double.parseDouble(percentageMin.getText()),
+								minPer,
+								Double.parseDouble(percentageMax.getText()))) {
+							percentageMin.setText("" + minPer);
+							tmp.setText("PercentageMin can not be less than "
+									+ minPer);
+						}
+					}
+				});
+
+		percentageMax.textProperty()
+				.addListener((observable, oldValue, newValue) -> {
+					if (!newValue.matches("(\\d+.\\d+)")) {
+						m = match.matcher(newValue);
+						if (m.find()) {
+							percentageMax.setText(m.group());
+						} else {
+							percentageMax.setText("");
+						}
+					}
+					if (!percentageMax.getText().isEmpty()) {
+						if (!in(Double.parseDouble(percentageMax.getText()),
+								Double.parseDouble(percentageMin.getText()),
+								maxPer)) {
+							percentageMax.setText("" + maxPer);
+							tmp.setText("PercentageMax can not be more than "
+									+ maxPer);
+						}
+					}
+				});
+
+		Node loginButton = dialog.getDialogPane().lookupButton(OKButton);
+		loginButton.setDisable(true);
+
+		pane.setBottom(grid);
+		dialog.getDialogPane().setContent(pane);
+
+		dialog.setResultConverter(dialogButton -> {
+			if (dialogButton == OKButton) {
+				if (IDMin.getText().trim().isEmpty())
+					IDMin.setText("" + minID);
+				if (IDMax.getText().trim().isEmpty())
+					IDMax.setText("" + maxID);
+
+				if (weightMin.getText().trim().isEmpty())
+					weightMin.setText("" + minWeight);
+				if (weightMax.getText().trim().isEmpty())
+					weightMax.setText("" + maxWeight);
+
+				if (percentageMin.getText().trim().isEmpty())
+					percentageMin.setText("" + minPer);
+				if (percentageMax.getText().trim().isEmpty())
+					percentageMax.setText("" + maxPer);
+
+				return new Object[] { Integer.parseInt(IDMin.getText().trim()),
+						Integer.parseInt(IDMax.getText().trim()),
+						Integer.parseInt(weightMin.getText().trim()),
+						Integer.parseInt(weightMax.getText().trim()),
+						Double.parseDouble(percentageMin.getText().trim()),
+						Double.parseDouble(percentageMax.getText().trim()) };
+			}
+			return null;
+		});
+		Object[] result = dialog.showAndWait().get();
+
+		return result;
+	}
+
+	final private static boolean in(int a, int min, int max) {
+		if (a >= min && a <= max)
+			return true;
+		return false;
+	}
+
+	final private static boolean in(double a, double min, double max) {
+		if (a >= min && a <= max)
+			return true;
+		return false;
 	}
 
 }

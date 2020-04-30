@@ -2,12 +2,15 @@ package application;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleStringProperty;
@@ -20,10 +23,14 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableColumn.SortType;
 import javafx.scene.layout.BorderPane;
@@ -49,6 +56,9 @@ public class Annual_REPORT extends Report implements Calculate, Export {
 	protected int year;
 	protected int farmersTotalWeight;
 	private static DecimalFormat df = new DecimalFormat("#.00");
+	private TableColumn<Object[], Integer> id;
+	private TableColumn<Object[], Integer> total;
+	private TableColumn<Object[], String> percent;
 
 	public Annual_REPORT(HashMap<Integer, Farmer> farmers, int year,
 			int farmersTotalWeight) {
@@ -73,8 +83,7 @@ public class Annual_REPORT extends Report implements Calculate, Export {
 		ObservableList<Object[]> data = FXCollections
 				.observableArrayList(convert());
 
-		TableColumn<Object[], Integer> id = new TableColumn<Object[], Integer>(
-				"ID");
+		id = new TableColumn<Object[], Integer>("ID");
 		id.setCellValueFactory(
 				new Callback<CellDataFeatures<Object[], Integer>, ObservableValue<Integer>>() {
 					public ObservableValue<Integer> call(
@@ -86,8 +95,7 @@ public class Annual_REPORT extends Report implements Calculate, Export {
 					}
 				});
 
-		TableColumn<Object[], Integer> total = new TableColumn<Object[], Integer>(
-				"Tot_Wei");
+		total = new TableColumn<Object[], Integer>("Tot_Wei");
 		total.setCellValueFactory(
 				new Callback<CellDataFeatures<Object[], Integer>, ObservableValue<Integer>>() {
 					public ObservableValue<Integer> call(
@@ -99,8 +107,7 @@ public class Annual_REPORT extends Report implements Calculate, Export {
 					}
 				});
 
-		TableColumn<Object[], String> percent = new TableColumn<Object[], String>(
-				"percent(%)");
+		percent = new TableColumn<Object[], String>("percent(%)");
 		percent.setCellValueFactory(
 				new Callback<CellDataFeatures<Object[], String>, ObservableValue<String>>() {
 					public ObservableValue<String> call(
@@ -131,6 +138,8 @@ public class Annual_REPORT extends Report implements Calculate, Export {
 		Filter.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
+				Object[] tmp = ChoiceWindow.displayRange(tableview);
+				
 				alert1.display("Still in construction");
 			}
 		});
@@ -185,4 +194,5 @@ public class Annual_REPORT extends Report implements Calculate, Export {
 
 		return toRe;
 	}
+	
 }

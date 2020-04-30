@@ -64,7 +64,7 @@ public class Main extends Application {
 			switch (args[0]) {
 			case "-d":
 				try {
-					List<String> a = readFile(args[0]);
+					List<String> a = readFile(args[1]);
 					StringBuilder fileList = new StringBuilder();
 					for(String tmp1 : a) {
 						fileList.append(tmp1+";");
