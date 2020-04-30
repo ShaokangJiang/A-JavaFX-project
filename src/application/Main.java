@@ -245,7 +245,7 @@ public class Main extends Application {
 					Notification.display(show);
 				} catch (Exception e) {
 					alert1.display("You didn't choose any data!");
-					e.printStackTrace();
+					//e.printStackTrace();
 					return;
 				}
 			}

@@ -19,7 +19,7 @@ public class DataFrame {
 	protected String[] column;
 	protected List<Object[]> rows;
 	protected Object[] dataType;
-	public int colNum;
+	protected int colNum;
 
 	/**
 	 * Create a new DataFrame with a given list of columns. column could be
