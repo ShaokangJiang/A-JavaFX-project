@@ -53,6 +53,12 @@ public class ChoiceWindow {
 	private static Date startDate;
 	private static Date endDate;
 	private static Boolean removeShow = false;
+	private static final String monthPattern = "yyyy-MM";
+	private static final String yearPattern = "yyyy";
+	private static final SimpleDateFormat dateMonthFormat = new SimpleDateFormat(
+			monthPattern);
+	private static final SimpleDateFormat dateYearFormat = new SimpleDateFormat(
+			yearPattern);
 
 	public static Date[] displayDateRange() {
 		// TODO Auto-generated method stub
@@ -529,8 +535,6 @@ public class ChoiceWindow {
 
 		RadioButton button3 = new RadioButton("Only select farm_id");
 		button3.setToggleGroup(group);
-		RadioButton button2 = new RadioButton("Use all available data");
-		button2.setToggleGroup(group);
 
 		GridPane grid = new GridPane();
 		grid.setHgap(10);
@@ -555,9 +559,10 @@ public class ChoiceWindow {
 								.observableList(new ArrayList<Integer>(toUse)));
 					}
 				});
-		
-		ID1 = new ComboBox<Integer>(FXCollections.observableArrayList(integers));
-		
+
+		ID1 = new ComboBox<Integer>(
+				FXCollections.observableArrayList(integers));
+
 		ID1.setDisable(true);
 
 		grid.add(new Label("Farmer_id"), 0, 0);
@@ -582,11 +587,6 @@ public class ChoiceWindow {
 								loginButton.setDisable(true);
 							} else
 								loginButton.setDisable(false);
-						} else if (n.equals(button2)) {// use all
-							ID.setDisable(true);
-							ID1.setDisable(true);
-							year.setDisable(true);
-							loginButton.setDisable(false);
 						} else if (n.equals(button3)) {// use all
 							ID.setDisable(true);
 							year.setDisable(true);
@@ -610,38 +610,34 @@ public class ChoiceWindow {
 						}
 					}
 				});
-		
+
 		ID1.getSelectionModel().selectedItemProperty()
-		.addListener(new ChangeListener() {
-			@Override
-			public void changed(ObservableValue ov, Object t,
-					Object t1) {
-				if (ID1.getSelectionModel().isEmpty()) {
-					loginButton.setDisable(true);
-				} else {
-					loginButton.setDisable(false);
-				}
-			}
-		});
+				.addListener(new ChangeListener() {
+					@Override
+					public void changed(ObservableValue ov, Object t,
+							Object t1) {
+						if (ID1.getSelectionModel().isEmpty()) {
+							loginButton.setDisable(true);
+						} else {
+							loginButton.setDisable(false);
+						}
+					}
+				});
 
 		BorderPane ano = new BorderPane();
 		ano.setTop(grid);
-		VBox vb = new VBox(5);
 		HBox hb = new HBox(5);
 		hb.getChildren().addAll(button3, ID1);
-		vb.getChildren().addAll(hb, button2);
-		ano.setBottom(vb);
+		ano.setBottom(hb);
 		pane.setBottom(ano);
 		dialog.getDialogPane().setContent(pane);
 
 		dialog.setResultConverter(dialogButton -> {
 			if (dialogButton == OKButton) {
-				if (button2.isSelected()) {
-					return new Integer[] { null,null };
-				} else if(button1.isSelected()){
+				if (button1.isSelected()) {
 					return new Integer[] { ID.getValue(), year.getValue() };
-				}else {
-					return new Integer[] { ID.getValue(), null};
+				} else {
+					return new Integer[] { ID1.getValue(), null };
 				}
 			}
 			return null;
@@ -1029,6 +1025,12 @@ public class ChoiceWindow {
 		return false;
 	}
 
+	final protected static boolean in(Date a, Date min, Date max) {
+		if (a.compareTo(min) >= 0 && a.compareTo(max) <= 0)
+			return true;
+		return false;
+	}
+
 	/**
 	 * return format: [Monthmin, MonthMax, WeightMin, WeightMax, PercentMin,
 	 * PercentMax]
@@ -1243,6 +1245,269 @@ public class ChoiceWindow {
 		return result;
 	}
 
+	private static Date minDate;
+	private static Date maxDate;
 
-	
+	/**
+	 * return format: [Monthmin, MonthMax, WeightMin, WeightMax, PercentMin,
+	 * PercentMax]
+	 * 
+	 * @param a
+	 * @return
+	 */
+	public static Object[] displayRangeID(TableView<Object[]> a) {
+
+		if (a.getItems().size() == 0)
+			return null;
+		try {
+		minDate = dateMonthFormat.parse((String)a.getItems().get(0)[0]);
+		maxDate = dateMonthFormat.parse((String)a.getItems().get(0)[0]);
+		minWeight = (int) a.getItems().get(0)[1];
+		maxWeight = (int) a.getItems().get(0)[1];
+		minPer = (double) a.getItems().get(0)[2];
+		maxPer = (double) a.getItems().get(0)[2];
+		
+		
+		for (Object[] tmp : a.getItems()) {
+			Date toCompare = dateMonthFormat.parse((String) tmp[0]);
+			if (toCompare.compareTo(minDate) < 0)
+				minDate = toCompare;
+			else if (toCompare.compareTo(maxDate) > 0)
+				maxDate = toCompare;
+
+			if ((int) tmp[1] < minWeight)
+				minWeight = (int) tmp[1];
+			else if ((int) tmp[1] > maxWeight)
+				maxWeight = (int) tmp[1];
+
+			double tmpPer = (double) Double.parseDouble(String.valueOf(tmp[2]));
+			if (tmpPer < minPer)
+				minPer = tmpPer;
+			else if (tmpPer > maxPer)
+				maxPer = tmpPer;
+
+		}
+		}catch(Exception e) {
+			return null;
+		}
+
+		Dialog<Object[]> dialog = new Dialog<>();
+		dialog.setTitle("Choice window");
+		dialog.setHeaderText("Please setup range you want: ");
+
+		ButtonType OKButton = new ButtonType("Ok", ButtonData.OK_DONE);
+		dialog.getDialogPane().getButtonTypes().addAll(OKButton,
+				ButtonType.CANCEL);
+
+		BorderPane pane = new BorderPane();
+		Label tmp = new Label(
+				"Input range: Empty field will be replaced with default value");
+		pane.setTop(tmp);
+
+		GridPane grid = new GridPane();
+		grid.setHgap(10);
+		grid.setVgap(10);
+		grid.setPadding(new Insets(20, 150, 10, 10));
+
+		TextField IDMin = new TextField("" + dateMonthFormat.format(minDate));
+		IDMin.setPromptText("Min Date");
+		TextField IDMax = new TextField("" + dateMonthFormat.format(maxDate));
+		IDMax.setPromptText("Max Date");
+		TextField weightMin = new TextField("" + minWeight);
+		weightMin.setPromptText("Min Weight");
+		TextField weightMax = new TextField("" + maxWeight);
+		weightMax.setPromptText("Max Weight");
+		TextField percentageMin = new TextField("" + minPer);
+		percentageMin.setPromptText("Min Percent");
+		TextField percentageMax = new TextField("" + maxPer);
+		percentageMax.setPromptText("Max Percent");
+
+		DateFormat dateFormat = new SimpleDateFormat(
+				"yyyy-MM");
+		
+		grid.add(new Label("Date range: "), 0, 0);
+		grid.add(IDMin, 1, 0);
+		grid.add(new Label(" to "), 2, 0);
+		grid.add(IDMax, 3, 0);
+		grid.add(
+				new Label("(Please enter in range " + dateFormat.format(minDate) + "~" + dateFormat.format(maxDate) + ")"),
+				4, 0);
+
+		grid.add(new Label("Weight range: "), 0, 1);
+		grid.add(weightMin, 1, 1);
+		grid.add(new Label(" to "), 2, 1);
+		grid.add(weightMax, 3, 1);
+		grid.add(new Label(
+				"(Please enter Integer " + minWeight + "~" + maxWeight + ")"),
+				4, 1);
+
+		grid.add(new Label("Percent range: "), 0, 2);
+		grid.add(percentageMin, 1, 2);
+		grid.add(new Label(" to "), 2, 2);
+		grid.add(percentageMax, 3, 2);
+		grid.add(
+				new Label(
+						"(Please enter Percent " + minPer + "~" + maxPer + ")"),
+				4, 2);
+
+		
+
+		weightMin.textProperty()
+				.addListener((observable, oldValue, newValue) -> {
+					if (!newValue.matches("\\d*")) {
+						weightMin.setText(newValue.replaceAll("[^\\d]", ""));
+					}
+
+				});
+
+		weightMax.textProperty()
+				.addListener((observable, oldValue, newValue) -> {
+					if (!newValue.matches("\\d*")) {
+						weightMax.setText(newValue.replaceAll("[^\\d]", ""));
+					}
+
+				});
+
+		percentageMin.textProperty()
+				.addListener((observable, oldValue, newValue) -> {
+					if (!newValue.matches("(\\d+.\\d+)")) {
+						m = match.matcher(newValue);
+						if (m.find()) {
+							percentageMin.setText(m.group());
+						} else {
+							percentageMin.setText("");
+						}
+					}
+
+				});
+
+		percentageMax.textProperty()
+				.addListener((observable, oldValue, newValue) -> {
+					if (!newValue.matches("(\\d+.\\d+)")) {
+						m = match.matcher(newValue);
+						if (m.find()) {
+							percentageMax.setText(m.group());
+						} else {
+							percentageMax.setText("");
+						}
+					}
+
+				});
+
+		Node loginButton = dialog.getDialogPane().lookupButton(OKButton);
+		loginButton.setDisable(true);
+		
+		IDMin.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (validateDateMonth(newValue)) {
+				loginButton.setDisable(false);
+				tmp.setText("");
+			} else {
+				tmp.setText(
+						"Date should be in format: yyyy-MM, e.g. 2019-01");
+				loginButton.setDisable(true);
+			}
+		});
+		
+		
+
+		IDMax.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (validateDateMonth(newValue)) {
+				loginButton.setDisable(false);
+				tmp.setText("");
+			} else {
+				tmp.setText(
+						"Date should be in format: yyyy-MM, e.g. 2019-01");
+				loginButton.setDisable(true);
+			}
+		});
+		
+		
+		pane.setBottom(grid);
+		dialog.getDialogPane().setContent(pane);
+		
+
+		dialog.setResultConverter(dialogButton -> {
+			if (dialogButton == OKButton) {
+				if (IDMin.getText().trim().isEmpty())
+					IDMin.setText("" + dateFormat.format(minDate));
+				if (IDMax.getText().trim().isEmpty())
+					IDMax.setText("" + dateFormat.format(maxDate));
+
+				if (weightMin.getText().trim().isEmpty())
+					weightMin.setText("" + minWeight);
+				if (weightMax.getText().trim().isEmpty())
+					weightMax.setText("" + maxWeight);
+
+				if (percentageMin.getText().trim().isEmpty())
+					percentageMin.setText("" + minPer);
+				if (percentageMax.getText().trim().isEmpty())
+					percentageMax.setText("" + maxPer);
+
+				try {
+					
+				if (!in(dateMonthFormat.parse(IDMin.getText()), minDate,
+						dateMonthFormat.parse(IDMax.getText()))) {
+					IDMin.setText("" + minDate);
+				}
+				
+				if (!in(dateMonthFormat.parse(IDMax.getText()),
+						dateMonthFormat.parse(IDMin.getText()), maxDate)) {
+					IDMax.setText("" + maxDate);
+				}
+				}
+				catch(Exception e) {
+					
+				}
+				
+				if (!in(Integer.parseInt(weightMin.getText()), minWeight,
+						Integer.parseInt(weightMax.getText()))) {
+					weightMin.setText("" + minWeight);
+				}
+
+				if (!in(Integer.parseInt(weightMax.getText()),
+						Integer.parseInt(weightMin.getText()), maxWeight)) {
+					weightMax.setText("" + maxWeight);
+				}
+
+				if (!in(Double.parseDouble(percentageMin.getText()), minPer,
+						Double.parseDouble(percentageMax.getText()))) {
+					percentageMin.setText("" + minPer);
+				}
+
+				if (!in(Double.parseDouble(percentageMax.getText()),
+						Double.parseDouble(percentageMin.getText()), maxPer)) {
+					percentageMax.setText("" + maxPer);
+				}
+
+				try {
+					return new Object[] { dateMonthFormat.parse(IDMin.getText().trim()),
+							dateMonthFormat.parse(IDMax.getText().trim()),
+							Integer.parseInt(weightMin.getText().trim()),
+							Integer.parseInt(weightMax.getText().trim()),
+							Double.parseDouble(percentageMin.getText().trim()),
+							Double.parseDouble(percentageMax.getText().trim()) };
+				} catch (NumberFormatException e) {
+				} catch (ParseException e) {
+				}
+			}
+			return null;
+		});
+		Object[] result = dialog.showAndWait().get();
+
+		return result;
+	}
+
+	private static Boolean validateDateMonth(String start) {
+		try {
+			startDate = dateMonthFormat.parse(start);
+			String[] startA = start.split("-");
+
+			if (Integer.parseInt(startA[1]) == 0)
+				return false;
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
 }
