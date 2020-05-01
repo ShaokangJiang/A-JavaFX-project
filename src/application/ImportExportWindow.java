@@ -141,7 +141,7 @@ public class ImportExportWindow  {
 		}
 		fileChooser.setInitialFileName(toWrite);
 
-		Button buttonM = new Button("Create File");
+		Button buttonM = new Button("Select path");
 
 		TextField path = new TextField();
 		path.setPromptText("The path...");
@@ -226,7 +226,7 @@ public class ImportExportWindow  {
 		}
 		fileChooser.setInitialFileName(toWrite);
 
-		Button buttonM = new Button("Create File");
+		Button buttonM = new Button("Select path");
 
 		TextField path = new TextField();
 		path.setPromptText("The path...");
