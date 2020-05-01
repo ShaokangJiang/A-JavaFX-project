@@ -52,8 +52,9 @@ public class Main extends Application {
 		}
 		DataFrameIndex tmp = null;
 		if (!initialAnalize(args)) {
-			System.out.print(
-					"Welcome to command mode of this program. Because of the requirement of this assignment,"
+			System.out.println("Wrong usage case detected, It seems you want to use the command mode, here it is.");
+			System.out.println(
+					"\nWelcome to command mode of this program. Because of the requirement of this assignment,"
 							+ "\n majority effort should be done in GUI. This part is only for command line import function. \n"
 							+ commandHelp());
 			
@@ -73,7 +74,7 @@ public class Main extends Application {
 					tmp = ImportExportWindow.Import(fileList.toString());
 				} catch (Exception as) {
 					System.out.println("Error happen: " + as.getMessage()
-							+ "\nYou will enter command line mode as it seems you want to use command line");
+							+ "\nYou will enter command line mode as it seems you want to use command line\n");
 					tmp = null; 
 					commandPrompt(tmp);
 					return;
