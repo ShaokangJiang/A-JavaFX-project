@@ -24,6 +24,7 @@ import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableColumn.SortType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 
 /**
@@ -52,6 +53,10 @@ public class DATE_RANGE_REPORT extends Report implements Calculate, Export {
 	protected int farmersTotalWeight;
 	private static DecimalFormat df = new DecimalFormat("#.00");
 	private TableView<Object[]> tableviewOrig;
+	private String[] agg; // aggregation result 0-minWeight 1-MaxWeight
+	// 2-AvgWeight 3-minWeightPer 4-MaxWeightPer
+	// 5-AvgWeightPer
+	private int totalWeight;
 
 	/**
 	 * Instead of passing in the daate range, let user click a button to choose
@@ -66,6 +71,7 @@ public class DATE_RANGE_REPORT extends Report implements Calculate, Export {
 		this.start = start;
 		this.end = end;
 		this.farmersTotalWeight = farmersTotalWeight;
+		this.agg = new String[6];
 	}
 
 	@Override
@@ -134,6 +140,32 @@ public class DATE_RANGE_REPORT extends Report implements Calculate, Export {
 		tableviewOrig = tableview;
 		tableview.setItems(data);
 
+		int minWeight = (int) tableview.getItems().get(0)[1];
+		int maxWeight = (int) tableview.getItems().get(0)[1];
+		double minPer = (double) tableview.getItems().get(0)[2];
+		double maxPer = (double) tableview.getItems().get(0)[2];
+		totalWeight = 0;
+
+		for (Object[] tmp : tableview.getItems()) {
+			if ((int) tmp[1] < minWeight)
+				minWeight = (int) tmp[1];
+			else if ((int) tmp[1] > maxWeight)
+				maxWeight = (int) tmp[1];
+			totalWeight += (int) tmp[1];
+			double tmpPer = (double) Double.parseDouble(String.valueOf(tmp[2]));
+			if (tmpPer < minPer)
+				minPer = tmpPer;
+			else if (tmpPer > maxPer)
+				maxPer = tmpPer;
+		}
+
+		agg[0] = ""+minWeight;
+		agg[1] = ""+maxWeight;
+		agg[2] = df.format((double) totalWeight / (double) tableview.getItems().size());
+		agg[3] = df.format(minPer);
+		agg[4] = df.format(maxPer);
+		agg[5] = df.format(100 / (double) tableview.getItems().size());
+		
 		id.setSortable(true);
 		id.setSortType(SortType.DESCENDING);
 		tableview.getColumns().addAll(id, total, percent);
@@ -192,8 +224,22 @@ public class DATE_RANGE_REPORT extends Report implements Calculate, Export {
 			@Override
 			public void handle(ActionEvent event) {
 				try {
+					String report = "range report for each farmer between "
+							+ start.toString() + " and " + end.toString()
+							+ System.lineSeparator() + "Total Farms: "
+							+ tableview.getItems().size()
+							+ System.lineSeparator() + "Total Weight: "
+							+ totalWeight + System.lineSeparator()
+							+ "Min Weight: " + agg[0] + System.lineSeparator()
+							+ "Max Weight: " + agg[1] + System.lineSeparator()
+							+ "Average Weight: " + agg[2]
+							+ System.lineSeparator() + "Min Weight Percentage: "
+							+ agg[3] + "%" + System.lineSeparator()
+							+ "Max Weight percentage: " + agg[4] + "%"
+							+ System.lineSeparator()
+							+ "Average Weight Percentage: " + agg[5] + "%";
 					if (ImportExportWindow.DisplayExport(Main.ss,
-							"Aggregation report:")) {
+							"Aggregation report:\n"+report)) {
 						alert1.display("Successfully export",
 								"Successfully exported to directory: "
 										+ ImportExportWindow.path1);
@@ -207,12 +253,28 @@ public class DATE_RANGE_REPORT extends Report implements Calculate, Export {
 		grid.add(Export, 0, 1);
 		grid.add(ExportAgg, 0, 2);
 
-		pane.setRight(grid);
+		VBox vb = new VBox(5);
+		vb.setStyle("-fx-padding: 16;");
+		vb.getChildren().addAll(new Label("Range report for each farmer between \n"
+				+ start.toString() + " and \n" + end.toString()),
+				new Label("Total Farms: " + tableview.getItems().size()),
+				new Label("Total Weight: " + totalWeight),
+				new Label("Min Weight: " + agg[0]),
+				new Label("Max Weight: " + agg[1]),
+				new Label("Average Weight: " + agg[2]),
+				new Label("Min Weight Percentage: " + agg[3] + "%"),
+				new Label("Max Weight percentage: " + agg[4] + "%"),
+				new Label("Average Weight Percentage: " + agg[5] + "%"));
+		BorderPane right = new BorderPane();
+
+		right.setCenter(vb);
+		right.setBottom(grid);
+		pane.setRight(right);
 
 		alert1.display(
 				"This effort will display the range report for each farmer between "
 						+ start.toString() + " and " + end.toString()
-						+ "\nRepresentation of each field:"
+						+ "\n\n Representation of each field:"
 						+ "\n  id -- Farmer_id in decending order"
 						+ "\n  tot_weight -- the total weight for a farmer on a day in range"
 						+ "\n  percent -- weight of this farm/weight of all farmers in this day in range");

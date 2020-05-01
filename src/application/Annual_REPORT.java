@@ -37,6 +37,7 @@ import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableColumn.SortType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 
 /**
@@ -62,9 +63,10 @@ public class Annual_REPORT extends Report implements Calculate, Export {
 	private TableColumn<Object[], Integer> total;
 	private TableColumn<Object[], String> percent;
 	private TableView<Object[]> tableviewOrig;
-	private double[] agg; // aggregation result 0-minWeight 1-MaxWeight
+	private String[] agg; // aggregation result 0-minWeight 1-MaxWeight
 							// 2-AvgWeight 3-minWeightPer 4-MaxWeightPer
 							// 5-AvgWeightPer
+	private int totalWeight;
 
 	public Annual_REPORT(HashMap<Integer, Farmer> farmers, int year,
 			int farmersTotalWeight) {
@@ -72,7 +74,7 @@ public class Annual_REPORT extends Report implements Calculate, Export {
 		// TODO Auto-generated constructor stub
 		this.year = year;
 		this.farmersTotalWeight = farmersTotalWeight;
-		this.agg = new double[6];
+		this.agg = new String[6];
 	}
 
 	@Override
@@ -138,7 +140,7 @@ public class Annual_REPORT extends Report implements Calculate, Export {
 		int maxWeight = (int) tableview.getItems().get(0)[1];
 		double minPer = (double) tableview.getItems().get(0)[2];
 		double maxPer = (double) tableview.getItems().get(0)[2];
-		int totalWeight = 0;
+		totalWeight = 0;
 
 		for (Object[] tmp : tableview.getItems()) {
 			if ((int) tmp[1] < minWeight)
@@ -153,12 +155,12 @@ public class Annual_REPORT extends Report implements Calculate, Export {
 				maxPer = tmpPer;
 		}
 
-		agg[0] = minWeight;
-		agg[1] = maxWeight;
-		agg[2] = (double) totalWeight / (double) tableview.getItems().size();
-		agg[3] = minPer;
-		agg[4] = maxPer;
-		agg[5] = 100 / (double) tableview.getItems().size();
+		agg[0] = ""+minWeight;
+		agg[1] = ""+maxWeight;
+		agg[2] = df.format((double) totalWeight / (double) tableview.getItems().size());
+		agg[3] = df.format(minPer);
+		agg[4] = df.format(maxPer);
+		agg[5] = df.format(100 / (double) tableview.getItems().size());
 
 		id.setSortable(true);
 		id.setSortType(SortType.DESCENDING);
@@ -220,8 +222,21 @@ public class Annual_REPORT extends Report implements Calculate, Export {
 			@Override
 			public void handle(ActionEvent event) {
 				try {
+					String report = "Report for " + year + ":"
+							+ System.lineSeparator() + "Total Farms: "
+							+ tableview.getItems().size()
+							+ System.lineSeparator() + "Total Weight: "
+							+ totalWeight + System.lineSeparator()
+							+ "Min Weight: " + agg[0] + System.lineSeparator()
+							+ "Max Weight: " + agg[1] + System.lineSeparator()
+							+ "Average Weight: " + agg[2]
+							+ System.lineSeparator() + "Min Weight Percentage: "
+							+ agg[3] + "%" + System.lineSeparator()
+							+ "Max Weight percentage: " + agg[4] + "%"
+							+ System.lineSeparator()
+							+ "Average Weight Percentage: " + agg[5] + "%";
 					if (ImportExportWindow.DisplayExport(Main.ss,
-							"Aggregation report:")) {
+							"Aggregation report:\n"+report)) {
 						alert1.display("Successfully export",
 								"Successfully exported to directory: "
 										+ ImportExportWindow.path1);
@@ -235,7 +250,22 @@ public class Annual_REPORT extends Report implements Calculate, Export {
 		grid.add(Export, 0, 1);
 		grid.add(ExportAgg, 0, 2);
 
-		pane.setRight(grid);
+		VBox vb = new VBox(5);
+		vb.setStyle("-fx-padding: 16;");
+		vb.getChildren().addAll(new Label("Report for " + year + ":"),
+				new Label("Total Farms: " + tableview.getItems().size()),
+				new Label("Total Weight: " + totalWeight),
+				new Label("Min Weight: " + agg[0]),
+				new Label("Max Weight: " + agg[1]),
+				new Label("Average Weight: " + agg[2]),
+				new Label("Min Weight Percentage: " + agg[3] + "%"),
+				new Label("Max Weight percentage: " + agg[4] + "%"),
+				new Label("Average Weight Percentage: " + agg[5] + "%"));
+		BorderPane right = new BorderPane();
+
+		right.setCenter(vb);
+		right.setBottom(grid);
+		pane.setRight(right);
 
 		alert1.display(
 				"This effort will display the annual report for each farmer in year"
