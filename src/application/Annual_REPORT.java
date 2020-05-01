@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -60,6 +61,7 @@ public class Annual_REPORT extends Report implements Calculate, Export {
 	private TableColumn<Object[], Integer> id;
 	private TableColumn<Object[], Integer> total;
 	private TableColumn<Object[], String> percent;
+	private TableView<Object[]> tableviewOrig;
 
 	public Annual_REPORT(HashMap<Integer, Farmer> farmers, int year,
 			int farmersTotalWeight) {
@@ -72,7 +74,10 @@ public class Annual_REPORT extends Report implements Calculate, Export {
 	@Override
 	public DataFrame export(TableView<Object[]> a) {
 		// TODO Auto-generated method stub
-		return null;
+		DataFrame toRe = new DataFrame(new String[] { "Farm_id", "Weight", "Total_weight" },
+				new Object[] { 1, 1, 1.1 });
+		toRe.rows = a.getItems().stream().collect(Collectors.toList());
+		return toRe;
 	}
 
 	@Override
@@ -121,7 +126,7 @@ public class Annual_REPORT extends Report implements Calculate, Export {
 				});
 
 		TableView<Object[]> tableview = new TableView<Object[]>();
-
+		tableviewOrig = tableview;
 		tableview.setItems(data);
 
 		id.setSortable(true);
@@ -139,19 +144,23 @@ public class Annual_REPORT extends Report implements Calculate, Export {
 		Filter.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				Object[] tmp = ChoiceWindow.displayRange(tableview);
-				List<Object[]> toShow = tableview.getItems().stream()
-						.filter(o -> ChoiceWindow.in((Integer) o[0],
-								(Integer) tmp[0], (Integer) tmp[1])
-								&& ChoiceWindow.in((Integer) o[1],
-										(Integer) tmp[2], (Integer) tmp[3])
-								&& ChoiceWindow.in(
-										Double.parseDouble((String) o[2]),
-										(Double) tmp[4], (Double) tmp[5]))
-						.collect(Collectors.toList());
-				ObservableList<Object[]> data = FXCollections
-						.observableArrayList(toShow);
-				tableview.setItems(data);
+				try {
+					Object[] tmp = ChoiceWindow.displayRange(tableviewOrig);
+					List<Object[]> toShow = tableviewOrig.getItems().stream()
+							.filter(o -> ChoiceWindow.in((Integer) o[0],
+									(Integer) tmp[0], (Integer) tmp[1])
+									&& ChoiceWindow.in((Integer) o[1],
+											(Integer) tmp[2], (Integer) tmp[3])
+									&& ChoiceWindow.in((double) o[2],
+											(double) tmp[4], (double) tmp[5]))
+							.collect(Collectors.toList());
+					ObservableList<Object[]> data = FXCollections
+							.observableArrayList(toShow);
+					tableview.setItems(data);
+					alert1.display("Filter result", "This will show up id " + tmp[0] + "~" + tmp[1]+ " weight " + tmp[2] + "~" + tmp[3]+ " Weight percaentage" + tmp[4] + "%~" + tmp[5]+"%");
+				} catch (Exception as) {
+					alert1.display("You select nothing...");
+				}
 			}
 		});
 
@@ -159,7 +168,11 @@ public class Annual_REPORT extends Report implements Calculate, Export {
 		Export.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				alert1.display("Still in construction");
+				try {
+				DataFrame toEx = export(tableview);
+				ImportExportWindow.DisplayExportReport(Main.ss, toEx);
+				}catch(Exception e) {
+				}
 			}
 		});
 

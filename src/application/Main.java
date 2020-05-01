@@ -37,6 +37,7 @@ public class Main extends Application {
 
 	protected FarmerManager Manager;
 	private static String[] argument;
+	protected static Stage ss;
 
 	/**
 	 * This method should actually handle argument
@@ -220,6 +221,7 @@ public class Main extends Application {
 	public void start(Stage s) throws Exception {
 		// TODO Auto-generated method stub
 		initialize();
+		ss = s;
 		BorderPane pane = new BorderPane();
 
 		ObservableList<Object[]> data = FXCollections

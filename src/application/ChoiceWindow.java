@@ -130,9 +130,11 @@ public class ChoiceWindow {
 			endDate = dateDayFormat.parse(end);
 			String[] startA = start.split("-");
 			String[] endA = end.split("-");
-			
-			if (Integer.parseInt(startA[1]) == 0|| Integer.parseInt(startA[2]) == 0
-					|| Integer.parseInt(endA[1]) == 0|| Integer.parseInt(endA[2]) == 0)
+
+			if (Integer.parseInt(startA[1]) == 0
+					|| Integer.parseInt(startA[2]) == 0
+					|| Integer.parseInt(endA[1]) == 0
+					|| Integer.parseInt(endA[2]) == 0)
 				return false;
 			return true;
 		} catch (Exception e) {
@@ -171,7 +173,7 @@ public class ChoiceWindow {
 				if (!integers.contains(Integer.parseInt(newValue))) {
 					tmp.setText("Notice: " + newValue
 							+ " is a new Farm id. It will be added to the table. ");
-				}else {
+				} else {
 					tmp.setText("");
 				}
 			} catch (Exception e) {
@@ -695,12 +697,12 @@ public class ChoiceWindow {
 		Set<Integer> toUseMonth = new HashSet<Integer>();
 		for (Date a : Manager.ds.Index.keySet()) {
 			toUse.add(a.getYear() + 1900);
-			toUseMonth.add(a.getMonth()+1);
+			toUseMonth.add(a.getMonth() + 1);
 		}
 
 		year = new ComboBox<Integer>(FXCollections
 				.observableArrayList(toUse.toArray(new Integer[0])));
-		
+
 		month = new ComboBox<Integer>(FXCollections
 				.observableArrayList(toUseMonth.toArray(new Integer[0])));
 
@@ -718,32 +720,32 @@ public class ChoiceWindow {
 					@Override
 					public void changed(ObservableValue ov, Object t,
 							Object t1) {
-						if (t1 != null && month.getValue()!= null) {
+						if (t1 != null && month.getValue() != null) {
 							loginButton.setDisable(false);
 						} else {
 							loginButton.setDisable(true);
 						}
 					}
 				});
-		
+
 		month.getSelectionModel().selectedItemProperty()
-		.addListener(new ChangeListener() {
-			@Override
-			public void changed(ObservableValue ov, Object t,
-					Object t1) {
-				if (t1 != null && year.getValue()!=null) {
-					loginButton.setDisable(false);
-				} else {
-					loginButton.setDisable(true);
-				}
-			}
-		});
+				.addListener(new ChangeListener() {
+					@Override
+					public void changed(ObservableValue ov, Object t,
+							Object t1) {
+						if (t1 != null && year.getValue() != null) {
+							loginButton.setDisable(false);
+						} else {
+							loginButton.setDisable(true);
+						}
+					}
+				});
 
 		dialog.getDialogPane().setContent(grid);
 
 		dialog.setResultConverter(dialogButton -> {
 			if (dialogButton == OKButton) {
-				return new Integer[] {year.getValue(), month.getValue()};
+				return new Integer[] { year.getValue(), month.getValue() };
 			}
 			return null;
 		});
@@ -752,7 +754,6 @@ public class ChoiceWindow {
 
 		return result;
 	}
-	
 
 	private static int minID;
 	private static int maxID;
@@ -778,8 +779,8 @@ public class ChoiceWindow {
 		maxID = (int) a.getItems().get(0)[0];
 		minWeight = (int) a.getItems().get(0)[1];
 		maxWeight = (int) a.getItems().get(0)[1];
-		minPer = Double.parseDouble((String) a.getItems().get(0)[2]);
-		maxPer = Double.parseDouble((String) a.getItems().get(0)[2]);
+		minPer = (double) a.getItems().get(0)[2];
+		maxPer = (double) a.getItems().get(0)[2];
 
 		for (Object[] tmp : a.getItems()) {
 			if ((int) tmp[0] < minID)
@@ -792,7 +793,7 @@ public class ChoiceWindow {
 			else if ((int) tmp[1] > maxWeight)
 				maxWeight = (int) tmp[1];
 
-			double tmpPer = Double.parseDouble((String) tmp[2]);
+			double tmpPer = (double) Double.parseDouble(String.valueOf(tmp[2]));
 			if (tmpPer < minPer)
 				minPer = tmpPer;
 			else if (tmpPer > maxPer)
@@ -803,8 +804,6 @@ public class ChoiceWindow {
 		Dialog<Object[]> dialog = new Dialog<>();
 		dialog.setTitle("Choice window");
 		dialog.setHeaderText("Please setup range you want: ");
-
-		boolean chosen = false;
 
 		ButtonType OKButton = new ButtonType("Ok", ButtonData.OK_DONE);
 		dialog.getDialogPane().getButtonTypes().addAll(OKButton,
@@ -862,26 +861,14 @@ public class ChoiceWindow {
 			if (!newValue.matches("\\d*")) {
 				IDMin.setText(newValue.replaceAll("[^\\d]", ""));
 			}
-			if (!IDMin.getText().isEmpty()) {
-				if (!in(Integer.parseInt(IDMin.getText()), minID,
-						Integer.parseInt(IDMax.getText()))) {
-					IDMin.setText("" + minID);
-					tmp.setText("IDmin can not be lower than " + minID);
-				}
-			}
+
 		});
 
 		IDMax.textProperty().addListener((observable, oldValue, newValue) -> {
 			if (!newValue.matches("\\d*")) {
 				IDMax.setText(newValue.replaceAll("[^\\d]", ""));
 			}
-			if (!IDMax.getText().isEmpty()) {
-				if (!in(Integer.parseInt(IDMax.getText()),
-						Integer.parseInt(IDMin.getText()), maxID)) {
-					IDMax.setText("" + maxID);
-					tmp.setText("IDmax can not be more than " + maxID);
-				}
-			}
+
 		});
 
 		weightMin.textProperty()
@@ -889,15 +876,7 @@ public class ChoiceWindow {
 					if (!newValue.matches("\\d*")) {
 						weightMin.setText(newValue.replaceAll("[^\\d]", ""));
 					}
-					if (!weightMin.getText().isEmpty()) {
-						if (!in(Integer.parseInt(weightMin.getText()),
-								minWeight,
-								Integer.parseInt(weightMax.getText()))) {
-							weightMin.setText("" + minWeight);
-							tmp.setText("weightMin can not be lower than "
-									+ minWeight);
-						}
-					}
+
 				});
 
 		weightMax.textProperty()
@@ -905,15 +884,7 @@ public class ChoiceWindow {
 					if (!newValue.matches("\\d*")) {
 						weightMax.setText(newValue.replaceAll("[^\\d]", ""));
 					}
-					if (!weightMax.getText().isEmpty()) {
-						if (!in(Integer.parseInt(weightMax.getText()),
-								Integer.parseInt(weightMin.getText()),
-								maxWeight)) {
-							weightMax.setText("" + maxWeight);
-							tmp.setText("weightMax can not be more than "
-									+ maxWeight);
-						}
-					}
+
 				});
 
 		percentageMin.textProperty()
@@ -926,15 +897,7 @@ public class ChoiceWindow {
 							percentageMin.setText("");
 						}
 					}
-					if (!percentageMin.getText().isEmpty()) {
-						if (!in(Double.parseDouble(percentageMin.getText()),
-								minPer,
-								Double.parseDouble(percentageMax.getText()))) {
-							percentageMin.setText("" + minPer);
-							tmp.setText("PercentageMin can not be less than "
-									+ minPer);
-						}
-					}
+
 				});
 
 		percentageMax.textProperty()
@@ -947,19 +910,8 @@ public class ChoiceWindow {
 							percentageMax.setText("");
 						}
 					}
-					if (!percentageMax.getText().isEmpty()) {
-						if (!in(Double.parseDouble(percentageMax.getText()),
-								Double.parseDouble(percentageMin.getText()),
-								maxPer)) {
-							percentageMax.setText("" + maxPer);
-							tmp.setText("PercentageMax can not be more than "
-									+ maxPer);
-						}
-					}
-				});
 
-		Node loginButton = dialog.getDialogPane().lookupButton(OKButton);
-		loginButton.setDisable(true);
+				});
 
 		pane.setBottom(grid);
 		dialog.getDialogPane().setContent(pane);
@@ -980,6 +932,37 @@ public class ChoiceWindow {
 					percentageMin.setText("" + minPer);
 				if (percentageMax.getText().trim().isEmpty())
 					percentageMax.setText("" + maxPer);
+
+				if (!in(Integer.parseInt(IDMin.getText()), minID,
+						Integer.parseInt(IDMax.getText()))) {
+					IDMin.setText("" + minID);
+				}
+
+				if (!in(Integer.parseInt(IDMax.getText()),
+						Integer.parseInt(IDMin.getText()), maxID)) {
+					IDMax.setText("" + maxID);
+				}
+
+				if (!in(Integer.parseInt(weightMin.getText()), minWeight,
+						Integer.parseInt(weightMax.getText()))) {
+					weightMin.setText("" + minWeight);
+				}
+
+				if (!in(Integer.parseInt(weightMax.getText()),
+						Integer.parseInt(weightMin.getText()), maxWeight)) {
+					weightMax.setText("" + maxWeight);
+				}
+
+				if (!in(Double.parseDouble(percentageMin.getText()), minPer,
+						Double.parseDouble(percentageMax.getText()))) {
+					percentageMin.setText("" + minPer);
+				}
+
+				if (!in(Double.parseDouble(percentageMax.getText()),
+						Double.parseDouble(percentageMin.getText()), maxPer)) {
+					percentageMax.setText("" + maxPer);
+					tmp.setText("PercentageMax can not be more than " + maxPer);
+				}
 
 				return new Object[] { Integer.parseInt(IDMin.getText().trim()),
 						Integer.parseInt(IDMax.getText().trim()),

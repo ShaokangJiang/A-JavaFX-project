@@ -202,6 +202,91 @@ public class ImportExportWindow  {
 		dialog.getDialogPane().setContent(grid);
 		return dialog.showAndWait().get();
 	}
+	
+	/**
+	 * Show this import window
+	 * 
+	 * 
+	 * @param i intot  indicate this is in import model or export model
+	 */
+	public static Boolean DisplayExportReport(Stage s, DataFrame k) {
+		// TODO Auto-generated method stub
+		Dialog<Boolean> dialog = new Dialog<>();
+
+		fileChooser = new FileChooser();
+
+		fileChooser.getExtensionFilters().addAll(
+				new FileChooser.ExtensionFilter("Comma-Separated Values",
+						"*.csv"));
+		fileChooser.setTitle("Save as...");
+		fileChooser.setInitialDirectory(new File(path1));
+		String toWrite = "Result.csv";
+		if (new File(path1 + File.separator +toWrite).exists()) {
+			toWrite = "Result-" + new Date().getTime() + ".csv";
+		}
+		fileChooser.setInitialFileName(toWrite);
+
+		Button buttonM = new Button("Create File");
+
+		TextField path = new TextField();
+		path.setPromptText("The path...");
+
+		buttonM.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				path.setText("");
+				File file = fileChooser.showSaveDialog(s);
+				if (file == null) {
+					return;
+				}
+				path.setText(file.getAbsolutePath());
+				path1 = file.getParent();
+				fileChooser.setInitialDirectory(new File(path1));
+			}
+		});
+
+		GridPane grid = new GridPane();
+		grid.setHgap(20);
+		grid.setVgap(10);
+		grid.setPadding(new Insets(20, 150, 10, 10));
+		grid.setAlignment(Pos.CENTER);
+
+		grid.add(new Label("Path:"), 0, 0);
+		grid.add(path, 1, 0);
+		grid.add(buttonM, 2, 0);
+
+		ButtonType OKButton = new ButtonType("Export", ButtonData.OK_DONE);
+		dialog.getDialogPane().getButtonTypes().addAll(OKButton,
+				ButtonType.CANCEL);
+
+		Node loginButton = dialog.getDialogPane().lookupButton(OKButton);
+		loginButton.setDisable(true);
+
+		// Do some validation (using the Java 8 lambda syntax).
+		path.textProperty().addListener((observable, oldValue, newValue) -> {
+			loginButton.setDisable(newValue.trim().isEmpty());
+		});
+
+		dialog.setResultConverter(dialogButton -> {
+			if (dialogButton == OKButton) {
+				try {
+					return exportReport(k, path.getText());
+				} catch (RuntimeException | IOException e) {
+					// TODO Auto-generated catch block
+					alert1.display("Error happen: \n" + e.getMessage());
+					return false;
+				}
+			}
+			return false;
+		});
+
+		dialog.setTitle("Export Path chosen Dialog");
+		dialog.setHeaderText(
+				"The import panel, please choose a file to be written");
+
+		dialog.getDialogPane().setContent(grid);
+		return dialog.showAndWait().get();
+	}
 
 	/**
 	 * put the passed in ds to the path, if path doesn;t contain filename, use
@@ -214,6 +299,12 @@ public class ImportExportWindow  {
 	public static boolean export(DataFrame ds, String path)
 			throws RuntimeException, IOException {
 		CSVFileReader.writeToCSV(ds, new File(path));
+		return true;
+	}
+	
+	public static boolean exportReport(DataFrame ds, String path)
+			throws RuntimeException, IOException {
+		CSVFileReader.writeToCSVReport(ds, new File(path));
 		return true;
 	}
 

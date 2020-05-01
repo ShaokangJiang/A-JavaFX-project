@@ -122,5 +122,19 @@ public class CSVFileReader {
 		out.flush();
 		out.close();
 	}
+	
+	public static void writeToCSVReport(DataFrame f, File csvFile)
+			throws RuntimeException, IOException {
+		if (f == null)
+			throw new IllegalArgumentException("Dataframe is null");
+		FileWriter out = new FileWriter(csvFile);
+		out.write(merge(f.getColumnNames()) + System.lineSeparator());
+		for (Object[] a : f.rows) {
+			a[0] = "Farm " + a[0];
+			out.write(merge(a) + System.lineSeparator());
+		}
+		out.flush();
+		out.close();
+	}
 
 }
