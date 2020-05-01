@@ -74,7 +74,8 @@ public class Annual_REPORT extends Report implements Calculate, Export {
 	@Override
 	public DataFrame export(TableView<Object[]> a) {
 		// TODO Auto-generated method stub
-		DataFrame toRe = new DataFrame(new String[] { "Farm_id", "Weight", "Total_weight" },
+		DataFrame toRe = new DataFrame(
+				new String[] { "Farm_id", "Weight", "Total_weight" },
 				new Object[] { 1, 1, 1.1 });
 		toRe.rows = a.getItems().stream().collect(Collectors.toList());
 		return toRe;
@@ -157,7 +158,11 @@ public class Annual_REPORT extends Report implements Calculate, Export {
 					ObservableList<Object[]> data = FXCollections
 							.observableArrayList(toShow);
 					tableview.setItems(data);
-					alert1.display("Filter result", "This will show up id " + tmp[0] + "~" + tmp[1]+ " weight " + tmp[2] + "~" + tmp[3]+ " Weight percaentage" + tmp[4] + "%~" + tmp[5]+"%");
+					alert1.display("Filter result",
+							"This will show up id " + tmp[0] + "~" + tmp[1]
+									+ " weight " + tmp[2] + "~" + tmp[3]
+									+ " Weight percaentage" + tmp[4] + "%~"
+									+ tmp[5] + "%");
 				} catch (Exception as) {
 					alert1.display("You select nothing...");
 				}
@@ -169,9 +174,10 @@ public class Annual_REPORT extends Report implements Calculate, Export {
 			@Override
 			public void handle(ActionEvent event) {
 				try {
-				DataFrame toEx = export(tableview);
-				ImportExportWindow.DisplayExportReport(Main.ss, toEx);
-				}catch(Exception e) {
+					DataFrame toEx = export(tableview);
+					ImportExportWindow.DisplayExportReport(Main.ss, toEx);
+					alert1.display("Successfully export", "Successfully exported to directory: "+ImportExportWindow.path1);
+				} catch (Exception e) {
 				}
 			}
 		});
