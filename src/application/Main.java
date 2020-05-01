@@ -343,12 +343,7 @@ public class Main extends Application {
 							alert1.display("You didn't choose any option!");
 							return;
 						}
-						if (farm[0] != null) {
-							report = Manager.generateFarmReport(farm[0],
-									farm[1]);
-						} else {
-							report = Manager.generateFarmReport(null, null);
-						}
+						report = Manager.generateFarmReport(farm[0],farm[1]);
 						farm = null;
 
 						if (report == null) {
@@ -535,6 +530,14 @@ public class Main extends Application {
 			}
 		});
 
+		Button Exit = new Button("Exit");
+		Exit.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				System.exit(0);
+			}
+		});
+		
 		GridPane grid = new GridPane();
 		grid.setHgap(20);
 		grid.setVgap(10);
@@ -546,6 +549,7 @@ public class Main extends Application {
 		grid.add(generate_report, 0, 1);
 		grid.add(addFarmerData, 0, 2);
 		grid.add(removeFarmerData, 1, 2);
+		grid.add(Exit, 1, 3);
 
 		pane.setRight(grid);
 

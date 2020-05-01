@@ -169,7 +169,8 @@ public class DATE_RANGE_REPORT extends Report implements Calculate, Export {
 		id.setSortable(true);
 		id.setSortType(SortType.DESCENDING);
 		tableview.getColumns().addAll(id, total, percent);
-
+		tableview.getSortOrder().add(id);
+		
 		pane.setLeft(tableview);
 
 		GridPane grid = new GridPane();

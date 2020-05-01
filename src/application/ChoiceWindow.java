@@ -33,7 +33,9 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
@@ -246,6 +248,7 @@ public class ChoiceWindow {
 	}
 
 	private static ComboBox<Integer> ID;
+	private static ComboBox<Integer> ID1;
 	private static ComboBox<String> day;
 	private static ComboBox<Integer> year;
 	private static ComboBox<Integer> month;
@@ -524,6 +527,8 @@ public class ChoiceWindow {
 		BorderPane pane = new BorderPane();
 		pane.setTop(button1);
 
+		RadioButton button3 = new RadioButton("Only select farm_id");
+		button3.setToggleGroup(group);
 		RadioButton button2 = new RadioButton("Use all available data");
 		button2.setToggleGroup(group);
 
@@ -550,6 +555,10 @@ public class ChoiceWindow {
 								.observableList(new ArrayList<Integer>(toUse)));
 					}
 				});
+		
+		ID1 = new ComboBox<Integer>(FXCollections.observableArrayList(integers));
+		
+		ID1.setDisable(true);
 
 		grid.add(new Label("Farmer_id"), 0, 0);
 		grid.add(ID, 1, 0);
@@ -568,14 +577,25 @@ public class ChoiceWindow {
 						if (n.equals(button1)) {// choose
 							ID.setDisable(false);
 							year.setDisable(false);
-							if (year.getValue() == null) {
+							ID1.setDisable(true);
+							if (year.getSelectionModel().isEmpty()) {
 								loginButton.setDisable(true);
 							} else
 								loginButton.setDisable(false);
 						} else if (n.equals(button2)) {// use all
 							ID.setDisable(true);
+							ID1.setDisable(true);
 							year.setDisable(true);
 							loginButton.setDisable(false);
+						} else if (n.equals(button3)) {// use all
+							ID.setDisable(true);
+							year.setDisable(true);
+							ID1.setDisable(false);
+							if (ID1.getSelectionModel().isEmpty()) {
+								loginButton.setDisable(true);
+							} else {
+								loginButton.setDisable(false);
+							}
 						}
 					}
 				});
@@ -590,19 +610,38 @@ public class ChoiceWindow {
 						}
 					}
 				});
+		
+		ID1.getSelectionModel().selectedItemProperty()
+		.addListener(new ChangeListener() {
+			@Override
+			public void changed(ObservableValue ov, Object t,
+					Object t1) {
+				if (ID1.getSelectionModel().isEmpty()) {
+					loginButton.setDisable(true);
+				} else {
+					loginButton.setDisable(false);
+				}
+			}
+		});
 
 		BorderPane ano = new BorderPane();
 		ano.setTop(grid);
-		ano.setBottom(button2);
+		VBox vb = new VBox(5);
+		HBox hb = new HBox(5);
+		hb.getChildren().addAll(button3, ID1);
+		vb.getChildren().addAll(hb, button2);
+		ano.setBottom(vb);
 		pane.setBottom(ano);
 		dialog.getDialogPane().setContent(pane);
 
 		dialog.setResultConverter(dialogButton -> {
 			if (dialogButton == OKButton) {
 				if (button2.isSelected()) {
-					return new Integer[] { null };
-				} else {
+					return new Integer[] { null,null };
+				} else if(button1.isSelected()){
 					return new Integer[] { ID.getValue(), year.getValue() };
+				}else {
+					return new Integer[] { ID.getValue(), null};
 				}
 			}
 			return null;
@@ -990,4 +1029,220 @@ public class ChoiceWindow {
 		return false;
 	}
 
+	/**
+	 * return format: [Monthmin, MonthMax, WeightMin, WeightMax, PercentMin,
+	 * PercentMax]
+	 * 
+	 * @param a
+	 * @return
+	 */
+	public static Object[] displayRangeIDYear(TableView<Object[]> a) {
+
+		if (a.getItems().size() == 0)
+			return null;
+
+		minID = (int) a.getItems().get(0)[0];
+		maxID = (int) a.getItems().get(0)[0];
+		minWeight = (int) a.getItems().get(0)[1];
+		maxWeight = (int) a.getItems().get(0)[1];
+		minPer = (double) a.getItems().get(0)[2];
+		maxPer = (double) a.getItems().get(0)[2];
+
+		for (Object[] tmp : a.getItems()) {
+			if ((int) tmp[0] < minID)
+				minID = (int) tmp[0];
+			else if ((int) tmp[0] > maxID)
+				maxID = (int) tmp[0];
+
+			if ((int) tmp[1] < minWeight)
+				minWeight = (int) tmp[1];
+			else if ((int) tmp[1] > maxWeight)
+				maxWeight = (int) tmp[1];
+
+			double tmpPer = (double) Double.parseDouble(String.valueOf(tmp[2]));
+			if (tmpPer < minPer)
+				minPer = tmpPer;
+			else if (tmpPer > maxPer)
+				maxPer = tmpPer;
+
+		}
+
+		Dialog<Object[]> dialog = new Dialog<>();
+		dialog.setTitle("Choice window");
+		dialog.setHeaderText("Please setup range you want: ");
+
+		ButtonType OKButton = new ButtonType("Ok", ButtonData.OK_DONE);
+		dialog.getDialogPane().getButtonTypes().addAll(OKButton,
+				ButtonType.CANCEL);
+
+		BorderPane pane = new BorderPane();
+		Label tmp = new Label(
+				"Input range: Empty field will be replaced with default value");
+		pane.setTop(tmp);
+
+		GridPane grid = new GridPane();
+		grid.setHgap(10);
+		grid.setVgap(10);
+		grid.setPadding(new Insets(20, 150, 10, 10));
+
+		TextField IDMin = new TextField("" + minID);
+		IDMin.setPromptText("Min Month");
+		TextField IDMax = new TextField("" + maxID);
+		IDMax.setPromptText("Max Month");
+		TextField weightMin = new TextField("" + minWeight);
+		weightMin.setPromptText("Min Weight");
+		TextField weightMax = new TextField("" + maxWeight);
+		weightMax.setPromptText("Max Weight");
+		TextField percentageMin = new TextField("" + minPer);
+		percentageMin.setPromptText("Min Percent");
+		TextField percentageMax = new TextField("" + maxPer);
+		percentageMax.setPromptText("Max Percent");
+
+		grid.add(new Label("Month range: "), 0, 0);
+		grid.add(IDMin, 1, 0);
+		grid.add(new Label(" to "), 2, 0);
+		grid.add(IDMax, 3, 0);
+		grid.add(
+				new Label("(Please enter Integer " + minID + "~" + maxID + ")"),
+				4, 0);
+
+		grid.add(new Label("Weight range: "), 0, 1);
+		grid.add(weightMin, 1, 1);
+		grid.add(new Label(" to "), 2, 1);
+		grid.add(weightMax, 3, 1);
+		grid.add(new Label(
+				"(Please enter Integer " + minWeight + "~" + maxWeight + ")"),
+				4, 1);
+
+		grid.add(new Label("Percent range: "), 0, 2);
+		grid.add(percentageMin, 1, 2);
+		grid.add(new Label(" to "), 2, 2);
+		grid.add(percentageMax, 3, 2);
+		grid.add(
+				new Label(
+						"(Please enter Percent " + minPer + "~" + maxPer + ")"),
+				4, 2);
+
+		IDMin.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (!newValue.matches("\\d*")) {
+				IDMin.setText(newValue.replaceAll("[^\\d]", ""));
+			}
+
+		});
+
+		IDMax.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (!newValue.matches("\\d*")) {
+				IDMax.setText(newValue.replaceAll("[^\\d]", ""));
+			}
+
+		});
+
+		weightMin.textProperty()
+				.addListener((observable, oldValue, newValue) -> {
+					if (!newValue.matches("\\d*")) {
+						weightMin.setText(newValue.replaceAll("[^\\d]", ""));
+					}
+
+				});
+
+		weightMax.textProperty()
+				.addListener((observable, oldValue, newValue) -> {
+					if (!newValue.matches("\\d*")) {
+						weightMax.setText(newValue.replaceAll("[^\\d]", ""));
+					}
+
+				});
+
+		percentageMin.textProperty()
+				.addListener((observable, oldValue, newValue) -> {
+					if (!newValue.matches("(\\d+.\\d+)")) {
+						m = match.matcher(newValue);
+						if (m.find()) {
+							percentageMin.setText(m.group());
+						} else {
+							percentageMin.setText("");
+						}
+					}
+
+				});
+
+		percentageMax.textProperty()
+				.addListener((observable, oldValue, newValue) -> {
+					if (!newValue.matches("(\\d+.\\d+)")) {
+						m = match.matcher(newValue);
+						if (m.find()) {
+							percentageMax.setText(m.group());
+						} else {
+							percentageMax.setText("");
+						}
+					}
+
+				});
+
+		pane.setBottom(grid);
+		dialog.getDialogPane().setContent(pane);
+
+		dialog.setResultConverter(dialogButton -> {
+			if (dialogButton == OKButton) {
+				if (IDMin.getText().trim().isEmpty())
+					IDMin.setText("" + minID);
+				if (IDMax.getText().trim().isEmpty())
+					IDMax.setText("" + maxID);
+
+				if (weightMin.getText().trim().isEmpty())
+					weightMin.setText("" + minWeight);
+				if (weightMax.getText().trim().isEmpty())
+					weightMax.setText("" + maxWeight);
+
+				if (percentageMin.getText().trim().isEmpty())
+					percentageMin.setText("" + minPer);
+				if (percentageMax.getText().trim().isEmpty())
+					percentageMax.setText("" + maxPer);
+
+				if (!in(Integer.parseInt(IDMin.getText()), minID,
+						Integer.parseInt(IDMax.getText()))) {
+					IDMin.setText("" + minID);
+				}
+
+				if (!in(Integer.parseInt(IDMax.getText()),
+						Integer.parseInt(IDMin.getText()), maxID)) {
+					IDMax.setText("" + maxID);
+				}
+
+				if (!in(Integer.parseInt(weightMin.getText()), minWeight,
+						Integer.parseInt(weightMax.getText()))) {
+					weightMin.setText("" + minWeight);
+				}
+
+				if (!in(Integer.parseInt(weightMax.getText()),
+						Integer.parseInt(weightMin.getText()), maxWeight)) {
+					weightMax.setText("" + maxWeight);
+				}
+
+				if (!in(Double.parseDouble(percentageMin.getText()), minPer,
+						Double.parseDouble(percentageMax.getText()))) {
+					percentageMin.setText("" + minPer);
+				}
+
+				if (!in(Double.parseDouble(percentageMax.getText()),
+						Double.parseDouble(percentageMin.getText()), maxPer)) {
+					percentageMax.setText("" + maxPer);
+				}
+
+				return new Object[] { Integer.parseInt(IDMin.getText().trim()),
+						Integer.parseInt(IDMax.getText().trim()),
+						Integer.parseInt(weightMin.getText().trim()),
+						Integer.parseInt(weightMax.getText().trim()),
+						Double.parseDouble(percentageMin.getText().trim()),
+						Double.parseDouble(percentageMax.getText().trim()) };
+			}
+			return null;
+		});
+		Object[] result = dialog.showAndWait().get();
+
+		return result;
+	}
+
+
+	
 }
