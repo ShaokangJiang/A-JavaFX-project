@@ -2,6 +2,7 @@ package application;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -186,6 +187,96 @@ public class ImportExportWindow  {
 			if (dialogButton == OKButton) {
 				try {
 					return export(k, path.getText());
+				} catch (RuntimeException | IOException e) {
+					// TODO Auto-generated catch block
+					alert1.display("Error happen: \n" + e.getMessage());
+					return false;
+				}
+			}
+			return false;
+		});
+
+		dialog.setTitle("Export Path chosen Dialog");
+		dialog.setHeaderText(
+				"The import panel, please choose a file to be written");
+
+		dialog.getDialogPane().setContent(grid);
+		return dialog.showAndWait().get();
+	}
+	
+	/**
+	 * Show this import window
+	 * 
+	 * 
+	 * @param i intot  indicate this is in import model or export model
+	 */
+	public static Boolean DisplayExport(Stage s, String k) {
+		// TODO Auto-generated method stub
+		Dialog<Boolean> dialog = new Dialog<>();
+
+		fileChooser = new FileChooser();
+
+		fileChooser.getExtensionFilters().addAll(
+				new FileChooser.ExtensionFilter("Text file",
+						"*.txt"));
+		fileChooser.setTitle("Save as...");
+		fileChooser.setInitialDirectory(new File(path1));
+		String toWrite = "Result.txt";
+		if (new File(path1 + File.separator +toWrite).exists()) {
+			toWrite = "Result-" + new Date().getTime() + ".txt";
+		}
+		fileChooser.setInitialFileName(toWrite);
+
+		Button buttonM = new Button("Select path");
+
+		TextField path = new TextField();
+		path.setPromptText("The path...");
+
+		buttonM.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				path.setText("");
+				File file = fileChooser.showSaveDialog(s);
+				if (file == null) {
+					return;
+				}
+				path.setText(file.getAbsolutePath());
+				path1 = file.getParent();
+				fileChooser.setInitialDirectory(new File(path1));
+			}
+		});
+
+		GridPane grid = new GridPane();
+		grid.setHgap(20);
+		grid.setVgap(10);
+		grid.setPadding(new Insets(20, 150, 10, 10));
+		grid.setAlignment(Pos.CENTER);
+
+		grid.add(new Label("Path:"), 0, 0);
+		grid.add(path, 1, 0);
+		grid.add(buttonM, 2, 0);
+
+		ButtonType OKButton = new ButtonType("Export", ButtonData.OK_DONE);
+		dialog.getDialogPane().getButtonTypes().addAll(OKButton,
+				ButtonType.CANCEL);
+
+		Node loginButton = dialog.getDialogPane().lookupButton(OKButton);
+		loginButton.setDisable(true);
+
+		// Do some validation (using the Java 8 lambda syntax).
+		path.textProperty().addListener((observable, oldValue, newValue) -> {
+			loginButton.setDisable(newValue.trim().isEmpty());
+		});
+
+		dialog.setResultConverter(dialogButton -> {
+			if (dialogButton == OKButton) {
+				try {
+					//Need export at here
+					FileWriter out = new FileWriter(new File(path.getText()));
+					out.write(k);
+					out.flush();
+					out.close();
+					return true;
 				} catch (RuntimeException | IOException e) {
 					// TODO Auto-generated catch block
 					alert1.display("Error happen: \n" + e.getMessage());

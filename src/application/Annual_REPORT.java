@@ -62,6 +62,9 @@ public class Annual_REPORT extends Report implements Calculate, Export {
 	private TableColumn<Object[], Integer> total;
 	private TableColumn<Object[], String> percent;
 	private TableView<Object[]> tableviewOrig;
+	private double[] agg; // aggregation result 0-minWeight 1-MaxWeight
+							// 2-AvgWeight 3-minWeightPer 4-MaxWeightPer
+							// 5-AvgWeightPer
 
 	public Annual_REPORT(HashMap<Integer, Farmer> farmers, int year,
 			int farmersTotalWeight) {
@@ -69,6 +72,7 @@ public class Annual_REPORT extends Report implements Calculate, Export {
 		// TODO Auto-generated constructor stub
 		this.year = year;
 		this.farmersTotalWeight = farmersTotalWeight;
+		this.agg = new double[6];
 	}
 
 	@Override
@@ -130,6 +134,32 @@ public class Annual_REPORT extends Report implements Calculate, Export {
 		tableviewOrig = tableview;
 		tableview.setItems(data);
 
+		int minWeight = (int) tableview.getItems().get(0)[1];
+		int maxWeight = (int) tableview.getItems().get(0)[1];
+		double minPer = (double) tableview.getItems().get(0)[2];
+		double maxPer = (double) tableview.getItems().get(0)[2];
+		int totalWeight = 0;
+
+		for (Object[] tmp : tableview.getItems()) {
+			if ((int) tmp[1] < minWeight)
+				minWeight = (int) tmp[1];
+			else if ((int) tmp[1] > maxWeight)
+				maxWeight = (int) tmp[1];
+			totalWeight += (int) tmp[1];
+			double tmpPer = (double) Double.parseDouble(String.valueOf(tmp[2]));
+			if (tmpPer < minPer)
+				minPer = tmpPer;
+			else if (tmpPer > maxPer)
+				maxPer = tmpPer;
+		}
+
+		agg[0] = minWeight;
+		agg[1] = maxWeight;
+		agg[2] = (double) totalWeight / (double) tableview.getItems().size();
+		agg[3] = minPer;
+		agg[4] = maxPer;
+		agg[5] = 100 / (double) tableview.getItems().size();
+
 		id.setSortable(true);
 		id.setSortType(SortType.DESCENDING);
 		tableview.getColumns().addAll(id, total, percent);
@@ -175,8 +205,27 @@ public class Annual_REPORT extends Report implements Calculate, Export {
 			public void handle(ActionEvent event) {
 				try {
 					DataFrame toEx = export(tableview);
-					ImportExportWindow.DisplayExportReport(Main.ss, toEx);
-					alert1.display("Successfully export", "Successfully exported to directory: "+ImportExportWindow.path1);
+					if (ImportExportWindow.DisplayExportReport(Main.ss, toEx)) {
+						alert1.display("Successfully export",
+								"Successfully exported to directory: "
+										+ ImportExportWindow.path1);
+					}
+				} catch (Exception e) {
+				}
+			}
+		});
+
+		Button ExportAgg = new Button("Export Aggregation report");
+		ExportAgg.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				try {
+					if (ImportExportWindow.DisplayExport(Main.ss,
+							"Aggregation report:")) {
+						alert1.display("Successfully export",
+								"Successfully exported to directory: "
+										+ ImportExportWindow.path1);
+					}
 				} catch (Exception e) {
 				}
 			}
@@ -184,6 +233,7 @@ public class Annual_REPORT extends Report implements Calculate, Export {
 
 		grid.add(Filter, 0, 0);
 		grid.add(Export, 0, 1);
+		grid.add(ExportAgg, 0, 2);
 
 		pane.setRight(grid);
 

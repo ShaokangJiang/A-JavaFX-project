@@ -179,8 +179,25 @@ public class DATE_RANGE_REPORT extends Report implements Calculate, Export {
 			public void handle(ActionEvent event) {
 				try {
 					DataFrame toEx = export(tableview);
-					ImportExportWindow.DisplayExportReport(Main.ss, toEx);
+					if(ImportExportWindow.DisplayExportReport(Main.ss, toEx)) {
 					alert1.display("Successfully export", "Successfully exported to directory: "+ImportExportWindow.path1);
+					}
+					} catch (Exception e) {
+				}
+			}
+		});
+		
+		Button ExportAgg = new Button("Export Aggregation report");
+		ExportAgg.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				try {
+					if (ImportExportWindow.DisplayExport(Main.ss,
+							"Aggregation report:")) {
+						alert1.display("Successfully export",
+								"Successfully exported to directory: "
+										+ ImportExportWindow.path1);
+					}
 				} catch (Exception e) {
 				}
 			}
@@ -188,6 +205,7 @@ public class DATE_RANGE_REPORT extends Report implements Calculate, Export {
 
 		grid.add(Filter, 0, 0);
 		grid.add(Export, 0, 1);
+		grid.add(ExportAgg, 0, 2);
 
 		pane.setRight(grid);
 

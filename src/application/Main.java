@@ -553,8 +553,7 @@ public class Main extends Application {
 
 		s.show();
 		alert1.display("Do you know? ", interfaceHelp());
-		alert1.display("Notification",
-				"This program is intended for a2 submission only. Some parts are still in construction");
+		
 	}
 
 	private static String selectFun(String[] tmp) {
