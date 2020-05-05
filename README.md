@@ -1,5 +1,7 @@
 # Milk-Weight-Project
 
+> A more interactive version is avaliable on [My blog](https://shaokang.ga/2020/projects/Milk-Weight-Project/).
+
 This is a Group project for my CS400 class, named as Milk Weight Project. I will talk about my design and usage instruction in the following space. Detailed implementation could be view at [This repository](https://github.com/ShaokangJiang/Milk-Weight-Project). 
 
 **Github Page:** https://github.com/ShaokangJiang/Milk-Weight-Project
