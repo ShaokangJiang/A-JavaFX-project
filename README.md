@@ -2,11 +2,11 @@
 
 This is a Group project done by me. I will talk about my design and usage instruction in the following space. Detailed implementation could be view at [This repository](https://github.com/ShaokangJiang/Milk-Weight-Project). 
 
-**Github Page:** https://github.com/ShaokangJiang/Milk-Weight-Project
+**Github Page:** https://github.com/ShaokangJiang/A-JavaFX-project
 
-**Compiled version:** https://github.com/ShaokangJiang/Milk-Weight-Project/releases
+**Compiled version:** https://github.com/ShaokangJiang/A-JavaFX-project/releases
 
-**Code version:** https://github.com/ShaokangJiang/Milk-Weight-Project/archive/0.9.zip
+**Code version:** https://github.com/ShaokangJiang/A-JavaFX-project/archive/0.9.zip
 
 ## Usage
 
