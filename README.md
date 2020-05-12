@@ -1,6 +1,8 @@
 # A JavaFX Project
 
-This is a Group project done by me. I will talk about my design and usage instruction in the following space. Detailed implementation could be view at [This repository](https://github.com/ShaokangJiang/Milk-Weight-Project). 
+> To view the more interactive version, you could visit my main site: https://shaokang.ga/2020/projects/A-JavaFx-project/
+
+This is a Group project done by me. I will talk about my design and usage instruction in the following space. Detailed implementation could be view at [This repository](https://github.com/ShaokangJiang/A-JavaFX-project). 
 
 **Github Page:** https://github.com/ShaokangJiang/A-JavaFX-project
 
@@ -116,7 +118,7 @@ The other are major part either control or show interfaces to user.  `Main.java`
 
 A detailed class by class design document and agreement could be view at here: 
 
-> This is the initial thought of design by me **before** the actual implementation, so the data structure used to store farmers has changed to `Hashmap` and there are  lot of minor changes. To see the latest version, go to [This repository](https://github.com/ShaokangJiang/Milk-Weight-Project). 
+> This is the initial thought of design by me **before** the actual implementation, so the data structure used to store farmers has changed to `Hashmap` and there are  lot of minor changes. To see the latest version, go to [This repository](https://github.com/ShaokangJiang/A-JavaFX-project). 
 >
 > And I have no idea about JavaFx when I design this structure, so it is possible that some places have structure error. 
 
