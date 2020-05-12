@@ -1,6 +1,6 @@
 # A JavaFX Project
 
-> To view the more interactive version, you could visit my main site: https://shaokang.ga/2020/projects/A-JavaFx-project/
+> A more interactive version is avaliable on [My blog](https://shaokang.ga/2020/projects/A-JavaFx-project/).
 
 This is a Group project done by me. I will talk about my design and usage instruction in the following space. Detailed implementation could be view at [This repository](https://github.com/ShaokangJiang/A-JavaFX-project). 
 
@@ -81,11 +81,11 @@ java --module-path "<Path to Javafx>" --add-modules javafx.controls,javafx.fxml 
 Source data should be in the format, it means this farm uses those amount of milk in this date:
 
 ```csv
-date,farm_id,weight
-2019-1-1,Farm 0,6760
-2019-1-1,Farm 1,8644
-2019-1-1,Farm 2,3547
-2019-1-2,Farm 0,6824
+date,id,weight
+2019-1-1,id 0,6760
+2019-1-1,id 1,8644
+2019-1-1,id 2,3547
+2019-1-2,id 0,6824
 ```
 
 ## Design
@@ -94,13 +94,13 @@ An overall agreement of this design is that those function should not only work 
 
 #### Basic components:
 
-{% asset_img 2.png %}
+![](https://shaokang.ga/2020/projects/Milk-Weight-Project/2.png)
 
 It contains the structure to use in this program. 
 
 #### Manager&Report:
 
-{% asset_img 3.png %}
+![](https://shaokang.ga/2020/projects/Milk-Weight-Project/3.png)
 
 It could be the heart of this program's non-GUI part, it contains method to handle with file, manage farmers. 
 
@@ -108,7 +108,7 @@ Report part is to generate different GUI report and then let it show up in the m
 
 #### GUI components:
 
-{% asset_img 1.png %}
+![](https://shaokang.ga/2020/projects/Milk-Weight-Project/1.png)
 
 Components that are not shown in the graph are two, `alert1.java`, `ChoiceWindow.java`. One component is the alert class to show various alerting information.  `ChoiceWindow.java` has all window required for choosing. Such as choosing for filter categories. This is a helper class to generate interface for user to select filter or other categories they want. Such as, choosing which function you want to use to manage data
 
@@ -122,7 +122,11 @@ A detailed class by class design document and agreement could be view at here:
 >
 > And I have no idea about JavaFx when I design this structure, so it is possible that some places have structure error. 
 
-{% pdf ./1.pdf %}
+<object data="https://shaokang.ga/2020/projects/Milk-Weight-Project/1.pdf" type="application/pdf" width="700px" height="700px">
+    <embed src="https://shaokang.ga/2020/projects/Milk-Weight-Project/1.pdf">
+        <p>This browser does not support PDFs. Please download the PDF to view it: <a href="https://shaokang.ga/2020/projects/Milk-Weight-Project/1.pdf">Download PDF</a>.</p>
+    </embed>
+</object>
 
 #### Special notes:
 
