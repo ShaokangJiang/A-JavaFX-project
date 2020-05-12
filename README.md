@@ -1,8 +1,6 @@
-# Milk-Weight-Project
+# A JavaFX Project
 
-> A more interactive version is avaliable on [My blog](https://shaokang.ga/2020/projects/Milk-Weight-Project/).
-
-This is a Group project for my CS400 class, named as Milk Weight Project. I will talk about my design and usage instruction in the following space. Detailed implementation could be view at [This repository](https://github.com/ShaokangJiang/Milk-Weight-Project). 
+This is a Group project done by me. I will talk about my design and usage instruction in the following space. Detailed implementation could be view at [This repository](https://github.com/ShaokangJiang/Milk-Weight-Project). 
 
 **Github Page:** https://github.com/ShaokangJiang/Milk-Weight-Project
 
@@ -11,6 +9,8 @@ This is a Group project for my CS400 class, named as Milk Weight Project. I will
 **Code version:** https://github.com/ShaokangJiang/Milk-Weight-Project/archive/0.9.zip
 
 ## Usage
+
+<!-- more -->
 
 #### Command Line Guide
 
@@ -76,7 +76,7 @@ java --module-path "<Path to Javafx>" --add-modules javafx.controls,javafx.fxml 
 
 #### Source data:
 
-Source data should be in the format, it means this farm export those amount of milk in this date:
+Source data should be in the format, it means this farm uses those amount of milk in this date:
 
 ```csv
 date,farm_id,weight
@@ -86,21 +86,19 @@ date,farm_id,weight
 2019-1-2,Farm 0,6824
 ```
 
-We are provided with the sample data from professor [Deppeler](http://pages.cs.wisc.edu/~deppeler/). Sample data format is designed and required for this project by professor [Deppeler](http://pages.cs.wisc.edu/~deppeler/). More sample data could be downloaded from [Deb's website](https://pages.cs.wisc.edu/~deppeler/cs400/assignments/ateam/files/). 
-
 ## Design
 
 An overall agreement of this design is that those function should not only work for this project but also for other project. 
 
 #### Basic components:
 
-![](https://shaokang.ga/2020/projects/Milk-Weight-Project/2.png)
+{% asset_img 2.png %}
 
 It contains the structure to use in this program. 
 
 #### Manager&Report:
 
-![](https://shaokang.ga/2020/projects/Milk-Weight-Project/3.png)
+{% asset_img 3.png %}
 
 It could be the heart of this program's non-GUI part, it contains method to handle with file, manage farmers. 
 
@@ -108,7 +106,7 @@ Report part is to generate different GUI report and then let it show up in the m
 
 #### GUI components:
 
-![](https://shaokang.ga/2020/projects/Milk-Weight-Project/1.png)
+{% asset_img 1.png %}
 
 Components that are not shown in the graph are two, `alert1.java`, `ChoiceWindow.java`. One component is the alert class to show various alerting information.  `ChoiceWindow.java` has all window required for choosing. Such as choosing for filter categories. This is a helper class to generate interface for user to select filter or other categories they want. Such as, choosing which function you want to use to manage data
 
@@ -122,21 +120,11 @@ A detailed class by class design document and agreement could be view at here:
 >
 > And I have no idea about JavaFx when I design this structure, so it is possible that some places have structure error. 
 
-<object data="https://shaokang.ga/2020/projects/Milk-Weight-Project/1.pdf" type="application/pdf" width="700px" height="700px">
-    <embed src="https://shaokang.ga/2020/projects/Milk-Weight-Project/1.pdf">
-        <p>This browser does not support PDFs. Please download the PDF to view it: <a href="https://shaokang.ga/2020/projects/Milk-Weight-Project/1.pdf">Download PDF</a>.</p>
-    </embed>
-</object>
+{% pdf ./1.pdf %}
 
 #### Special notes:
 
 **It requires oracle java 1.9(openjdk on linux) or above**
-
-## Credit/Copyright info
-
-In case needed, this is an assignment for my CS400 course. Data source and project requirement is done by professor [Deb Deppeler](http://pages.cs.wisc.edu/~deppeler/). They have copyright for multiple stuff in this project, including but not limit to the requirement of this assignment, data source. and components required for this project, including farm report, annual report, etc. 
-
-The design and implementation is mostly done by me. Contribution of each person in this project could be viewed from the commits page of the [git repo](https://github.com/ShaokangJiang/Milk-Weight-Project).
 
 ## Last Note:
 
